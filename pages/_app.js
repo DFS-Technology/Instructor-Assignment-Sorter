@@ -3,7 +3,7 @@ import React from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import theme from '../styles/theme';
 import { ThemeProvider } from '@material-ui/core/styles';
-import db from '../lib/firebase-lib';
+// import db from '../lib/firebase-lib';
 
 export default function MyApp({ Component, pageProps }) {
   
