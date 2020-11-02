@@ -1,5 +1,7 @@
-import Navbar from './navbar'
+import Navbar from './navbar/navbar'
 import { makeStyles } from '@material-ui/core/styles';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 
 const drawerWidth = 240;
 
@@ -15,22 +17,19 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function Layout({
-    children, 
-    pageName,
-}) {
+export default function Layout({children, pageName}) {
     
     const classes = useStyles();
 
+    
+
     return (
         <div className={classes.root}>
-        
         <Navbar pageName={pageName}/>
-        <main>{children}</main>
-        <main className={classes.content}>
-        <div className={classes.appBarSpacer} />
-        {children}
-        </main>
+            <main className={classes.content}>
+                <div className={classes.appBarSpacer} />
+                {children}
+            </main>
         
         </div>
     );

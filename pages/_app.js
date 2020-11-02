@@ -1,12 +1,23 @@
+import React, {useState, useEffect} from 'react';
+import initFirebase from '../lib/init-firebase'
+import firebase from 'firebase/app'
+import 'firebase/auth'
+import 'firebase/firestore';
+import { useRouter } from 'next/router';
+import PropTypes from 'prop-types';
+
 import Head from 'next/head';
-import React from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import theme from '../styles/theme';
+
 import { ThemeProvider } from '@material-ui/core/styles';
-// import db from '../lib/firebase-lib';
+import theme from '../styles/theme';
 
 export default function MyApp({ Component, pageProps }) {
   
+  
+  initFirebase();
+
+
   React.useEffect(() => {
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side');
@@ -14,7 +25,11 @@ export default function MyApp({ Component, pageProps }) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
   }, []);
+
+
+
   
+
   return (
     <React.Fragment>
       <Head>
@@ -28,13 +43,13 @@ export default function MyApp({ Component, pageProps }) {
       
       <ThemeProvider theme={theme}>
       <CssBaseline/>
-          <Component {...pageProps} />
+          <Component { ...pageProps} />
       </ThemeProvider>
     </React.Fragment>
 
   );
 }
-
-// MyApp.getInitialProps = async (ctx) => {
-//   return {}
-// }
+MyApp.propTypes = {
+  Component: PropTypes.elementType.isRequired,
+  pageProps: PropTypes.object.isRequired,
+};
