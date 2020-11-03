@@ -1,9 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import initFirebase from '../lib/init-firebase'
+import initFirebase from '../lib/init-firebase';
+import {getInitialData} from '../lib/firestore-api';
 import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/firestore';
-import { useRouter } from 'next/router';
+import Router from 'next/router';
 import PropTypes from 'prop-types';
 
 import Head from 'next/head';
@@ -11,13 +12,31 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme from '../styles/theme';
+import '../styles/new.css'
 
 export default function MyApp({ Component, pageProps }) {
   
   
   initFirebase();
+  
+  const [tempSeasonList, tempCurrentSeason] = getInitialData();
+  const [seasonList, setSeasonList] = useState(tempSeasonList);
+  
+  const tempCurrentSeason1 = seasonList[0];
+  console.log(seasonList,tempSeasonList[0],seasonList[0],tempCurrentSeason1);
+  const [currentSeason, setCurrentSeason] = useState('');
+  
+  
+  
+  const userPackage = {
+    seasons: seasonList,
+    setSeasons: setSeasonList,
+    curSeason: currentSeason,
+    setCurSeason: setCurrentSeason,
+  }
+  console.log(userPackage.seasons,userPackage.curSeason);
 
-
+  
   React.useEffect(() => {
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side');
@@ -43,10 +62,9 @@ export default function MyApp({ Component, pageProps }) {
       
       <ThemeProvider theme={theme}>
       <CssBaseline/>
-          <Component { ...pageProps} />
+          <Component { ...pageProps} userPackage={userPackage}/>
       </ThemeProvider>
     </React.Fragment>
-
   );
 }
 MyApp.propTypes = {

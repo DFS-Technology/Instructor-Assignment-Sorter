@@ -6,14 +6,14 @@ import React, {useEffect, useState} from 'react';
 import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/firestore';
-export default function Home() {
+export default function Home({userPackage}) {
   const router = useRouter();
   var user =  firebase.auth().currentUser;
   useEffect(()=>{
     if(!user){
-      route.push('/authentication/login')
+      router.push('/authentication/login');
     }
-  }, user);
+  },  [user]);
   // firebase.auth().onAuthStateChanged(function(tempUser) {
   //   if(!tempUser){
   //     router.push('/authentication/login');
@@ -22,7 +22,7 @@ export default function Home() {
 
   return (
     
-    <Layout pageName ='Homepage' >
+    <Layout pageName ='Homepage' userPackage={userPackage}>
     </Layout>
   );
 }
