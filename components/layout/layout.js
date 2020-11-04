@@ -1,12 +1,9 @@
-import Navbar from './navbar/navbar'
-import { makeStyles } from '@material-ui/core/styles';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import firebase from 'firebase/app'
-import 'firebase/auth'
-import 'firebase/firestore';
+import React, { useState } from 'react';
 
-const drawerWidth = 240;
+import { makeStyles } from '@material-ui/core/styles';
+
+import Menu from './menu';
+import TitleBar from './titleBar';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -23,19 +20,30 @@ const useStyles = makeStyles((theme) => ({
 export default function Layout({children, pageName, userPackage}) {
 
     const classes = useStyles();
-
-    
-
-    
+    const [open, setOpen] = useState(true);
+    const handleDrawerOpen = () => {
+        setOpen(true);
+    };
+    const handleDrawerClose = () => {
+        setOpen(false);
+    };
     
     return (
         <div className={classes.root}>
-        <Navbar pageName={pageName} userPackage={userPackage}/>
+        <TitleBar 
+            open={open} 
+            handleDrawerOpen={handleDrawerOpen} 
+            pageName={pageName}
+            userPackage={userPackage}
+        />
+        <Menu 
+            open={open} 
+            handleDrawerClose={handleDrawerClose}
+        />
             <main className={classes.content}>
                 <div className={classes.appBarSpacer} />
                 {children}
             </main>
-        
         </div>
     );
 

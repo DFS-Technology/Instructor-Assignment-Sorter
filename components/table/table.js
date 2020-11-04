@@ -4,7 +4,7 @@ import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 
 import DataTypeProviders from './datatype-providers';
-import {getSchools, getInstructors, addDocuments, editDocuments} from '../../lib/firestore-api';
+import {getDocuments, addDocuments, editDocuments} from '../../lib/firestore-api';
 
 
 import IconButton from '@material-ui/core/IconButton';
@@ -14,6 +14,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import SaveIcon from '@material-ui/icons/Save';
 import ClearIcon from '@material-ui/icons/Clear';
 import FilterListIcon from '@material-ui/icons/FilterList';
+import CheckIcon from '@material-ui/icons/Check';
 
 import {
   EditingState,
@@ -68,7 +69,7 @@ const TableEditCommandBase = ({
     ):id === 'delete' ? (
       <DeleteIcon />
       ):id === 'commit' ? (
-        <SaveIcon />
+        <CheckIcon />
         ):id === 'cancel' ? (
           <ClearIcon />
           ):null}
@@ -138,7 +139,7 @@ const Root = props => <Grid.Root {...props} style={{ height: '100%' , width: '10
 
 export default function Table({table_type, userPackage}) {
   const [columns] = useState((table_type === 'Instructors' )? instructorColumns : schoolColumns);
-  // const [rows, setRows] = useState((table_type === 'Instructors' )? getInstructors(userPackage.curSeason): getSchools(userPackage.curSeason));
+  // const [rows, setRows] = useState(getDocuments(userPackage, table_type));
   const [rows, setRows] = useState([]);
   const [BooleanColumns] = useState((table_type === 'Instructors' )? ['car','returner'] : []);
   const [ShirtColumns] = useState((table_type === 'Instructors' )? ['shirtSize'] : []);
@@ -163,42 +164,22 @@ export default function Table({table_type, userPackage}) {
     </Toolbar.Root>
   );
   const ToolbarRoot = withStyles(styles, { name: 'ToolbarRoot' })(ToolbarRootBase);
-  // const commitChanges = ({ added, changed, deleted }) => {
-  //   let changedRows;
-  //   if (added) {
-  //     const newIds = addDocuments(userPackage.curSeason, table_type, added);
-  //     changedRows = [
-  //       ...rows,
-  //       ...added.map((row, index) => ({
-  //         id: newIds[index],
-  //         ...row,
-  //       })),
-  //     ];
-  //   }
-  //   if (changed) {
-  //     changedRows = rows.map(row => (changed[row.id] ? { ...row, ...changed[row.id] } : row));
-  //     editDocuments(userPackage.curSeason, table_type, changed, changedRows);
-  //   }
-  //   if (deleted) {
-  //     const deletedSet = new Set(deleted);
-  //     changedRows = rows.filter(row => !deletedSet.has(row.id));
-  //   }
-  //   setRows(changedRows);
-  // };
   const commitChanges = ({ added, changed, deleted }) => {
     let changedRows;
     if (added) {
-      const startingAddedId = rows.length > 0 ? rows[rows.length - 1].id + 1 : 0;
+      // const newIds = addDocuments(userPackage.curSeason, table_type, added);
       changedRows = [
         ...rows,
         ...added.map((row, index) => ({
-          id: startingAddedId + index,
+          // id: newIds[index],
+          id: added.length + index,
           ...row,
         })),
       ];
     }
     if (changed) {
       changedRows = rows.map(row => (changed[row.id] ? { ...row, ...changed[row.id] } : row));
+      // editDocuments(userPackage.curSeason, table_type, changed, changedRows);
     }
     if (deleted) {
       const deletedSet = new Set(deleted);
@@ -206,6 +187,7 @@ export default function Table({table_type, userPackage}) {
     }
     setRows(changedRows);
   };
+  
 
 
   

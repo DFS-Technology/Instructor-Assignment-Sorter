@@ -1,10 +1,6 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import initFirebase from '../lib/init-firebase';
 import {getInitialData} from '../lib/firestore-api';
-import firebase from 'firebase/app'
-import 'firebase/auth'
-import 'firebase/firestore';
-import Router from 'next/router';
 import PropTypes from 'prop-types';
 
 import Head from 'next/head';
@@ -12,6 +8,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme from '../styles/theme';
+// fixes a bug.
 import '../styles/new.css'
 
 export default function MyApp({ Component, pageProps }) {
@@ -24,7 +21,7 @@ export default function MyApp({ Component, pageProps }) {
   
   const tempCurrentSeason1 = seasonList[0];
   console.log(seasonList,tempSeasonList[0],seasonList[0],tempCurrentSeason1);
-  const [currentSeason, setCurrentSeason] = useState('');
+  const [currentSeason, setCurrentSeason] = useState(tempCurrentSeason);
   
   
   
