@@ -7,9 +7,9 @@ App built on Next.js Framework for React and deployed on it's integrated Vercell
 - Clone repo into local directory.
 
 ```
-git clone https://github.com/Kabir314/Instructor-Assignment-Sorter.git
+git clone https://github.com/DreamForSchools/Instructor-Assignment-Sorter.git
 cd ./Instructor-Assignment-Sorter
-git remote add origin https://github.com/Kabir314/Instructor-Assignment-Sorter.git
+git remote add origin https://github.com/DreamForSchools/Instructor-Assignment-Sorter.git
 ```
 
 - Install required packages not cached on the github repo.
