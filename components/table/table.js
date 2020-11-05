@@ -176,8 +176,8 @@ export default function Table({table_type}) {
       changedRows = [
         ...rows,
         ...added.map((row, index) => ({
-          id: newIds[index],
-          // id: added.length + index,
+          // id: newIds[index],
+          id: added.length + index,
           ...row,
         })),
       ];
