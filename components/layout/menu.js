@@ -19,6 +19,7 @@ import 'firebase/auth'
 
 import { useRouter } from 'next/router';
 
+import { useAuth } from "../../lib/use-auth.js";
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -56,13 +57,14 @@ export default function Menu({open, handleDrawerClose}){
     const classes = useStyles();
     const router = useRouter();
     
+    const auth = useAuth();
+    
     const handleSignOut = () =>{
-      firebase.auth().signOut().then(function(){
+      auth.signout().then(function(){
         console.log('Signed Out');
       }).catch(function(error) {
         console.error('Sign Out Error', error);
       });
-      router.push('/authentication/login');
     };
 
     return (

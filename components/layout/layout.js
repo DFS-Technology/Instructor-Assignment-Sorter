@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function Layout({children, pageName, userPackage}) {
+export default function Layout({children, pageName}) {
 
     const classes = useStyles();
     const [open, setOpen] = useState(true);
@@ -34,7 +34,6 @@ export default function Layout({children, pageName, userPackage}) {
             open={open} 
             handleDrawerOpen={handleDrawerOpen} 
             pageName={pageName}
-            userPackage={userPackage}
         />
         <Menu 
             open={open} 

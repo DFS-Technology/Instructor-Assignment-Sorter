@@ -6,6 +6,8 @@ import PropTypes from 'prop-types';
 import Head from 'next/head';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
+import { ProvideAuth } from "../lib/use-auth.js";
+
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme from '../styles/theme';
 // fixes a bug.
@@ -16,24 +18,22 @@ export default function MyApp({ Component, pageProps }) {
   
   initFirebase();
   
-  const [tempSeasonList, tempCurrentSeason] = getInitialData();
-  const [seasonList, setSeasonList] = useState(tempSeasonList);
+  // const tempData = getInitialData();
+  // const [seasonList, setSeasonList] = useState(tempData[0]);
   
-  const tempCurrentSeason1 = seasonList[0];
-  console.log(seasonList,tempSeasonList[0],seasonList[0],tempCurrentSeason1);
-  const [currentSeason, setCurrentSeason] = useState(tempCurrentSeason);
-  
+  // console.log('Check Initial Data:', tempData, tempData[0], tempData[1]);
+  // const [currentSeason, setCurrentSeason] = useState(tempData[1]);
   
   
-  const userPackage = {
-    seasons: seasonList,
-    setSeasons: setSeasonList,
-    curSeason: currentSeason,
-    setCurSeason: setCurrentSeason,
-  }
-  console.log(userPackage.seasons,userPackage.curSeason);
+  
+  // const userPackage = {
+  //   seasons: seasonList,
+  //   setSeasons: setSeasonList,
+  //   curSeason: currentSeason,
+  //   setCurSeason: setCurrentSeason,
+  // }
+  // console.log('Check UserPackage: ',userPackage.seasons,userPackage.curSeason);
 
-  
   React.useEffect(() => {
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side');
@@ -58,8 +58,10 @@ export default function MyApp({ Component, pageProps }) {
       </Head>
       
       <ThemeProvider theme={theme}>
-      <CssBaseline/>
-          <Component { ...pageProps} userPackage={userPackage}/>
+        <CssBaseline/>
+        <ProvideAuth>
+            <Component { ...pageProps} />
+        </ProvideAuth>
       </ThemeProvider>
     </React.Fragment>
   );

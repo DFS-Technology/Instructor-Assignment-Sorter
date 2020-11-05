@@ -21,6 +21,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 
+import { useAuth } from "../../lib/use-auth.js";
 
 const drawerWidth = 240;
 
@@ -58,12 +59,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function appBar({open, handleDrawerOpen, pageName, userPackage}){
+export default function appBar({open, handleDrawerOpen, pageName}){
     const classes = useStyles();
-    
-    const setCurSeasonHandler = (event) => {
-      userPackage.setCurSeason([event.target.value]);
-    };
+    const auth = useAuth();
+
+    // const setCurSeasonHandler = (event) => {
+    //   userPackage.setCurSeason([event.target.value]);
+    // };
     
     return (
       <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
@@ -96,10 +98,11 @@ export default function appBar({open, handleDrawerOpen, pageName, userPackage}){
                   <Select
                       labelId="SeasonLabel"
                       id="SeasonSelect"
-                      value={userPackage.curSeason[0]}
-                      onChange={(event)=>setCurSeasonHandler(event)}
+                      value={auth.currentSeason}
+                      onChange={(event)=>auth.updateCurrentSeason(event.target.value)}
                   >
-                    {userPackage.seasons.map(season => (<MenuItem  value={season} key={season}>{season}</MenuItem >))}
+                    {/* {userPackage.seasons.map(season => (<MenuItem  value={season} key={season}>{season}</MenuItem >))} */}
+                    {auth.seasonList.map(season => (<MenuItem  value={season} key={season}>{season}</MenuItem >))}
                   </Select>
                 </FormControl>
                 </Grid>

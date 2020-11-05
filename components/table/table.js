@@ -16,6 +16,8 @@ import ClearIcon from '@material-ui/icons/Clear';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import CheckIcon from '@material-ui/icons/Check';
 
+import { useAuth } from "../../lib/use-auth.js";
+
 import {
   EditingState,
 
@@ -137,10 +139,12 @@ const getRowId = row => row.id;
 
 const Root = props => <Grid.Root {...props} style={{ height: '100%' , width: '100%'}} />;
 
-export default function Table({table_type, userPackage}) {
+export default function Table({table_type}) {
+  const auth = useAuth();
+
   const [columns] = useState((table_type === 'Instructors' )? instructorColumns : schoolColumns);
   // const [rows, setRows] = useState(getDocuments(userPackage, table_type));
-  const [rows, setRows] = useState([]);
+  // const [rows, setRows] = useState([]);
   const [BooleanColumns] = useState((table_type === 'Instructors' )? ['car','returner'] : []);
   const [ShirtColumns] = useState((table_type === 'Instructors' )? ['shirtSize'] : []);
   const [defaultHiddenColumnNames] = useState([]);
@@ -166,35 +170,35 @@ export default function Table({table_type, userPackage}) {
   const ToolbarRoot = withStyles(styles, { name: 'ToolbarRoot' })(ToolbarRootBase);
   const commitChanges = ({ added, changed, deleted }) => {
     let changedRows;
+    let rows = (table_type === 'Instructors' )? auth.instructorRows : auth.schoolRows;
     if (added) {
-      // const newIds = addDocuments(userPackage.curSeason, table_type, added);
+      const newIds = addDocuments(auth.currentSeason, table_type, added);
       changedRows = [
         ...rows,
         ...added.map((row, index) => ({
-          // id: newIds[index],
-          id: added.length + index,
+          id: newIds[index],
+          // id: added.length + index,
           ...row,
         })),
       ];
     }
     if (changed) {
       changedRows = rows.map(row => (changed[row.id] ? { ...row, ...changed[row.id] } : row));
-      // editDocuments(userPackage.curSeason, table_type, changed, changedRows);
+      editDocuments(auth.currentSeason, table_type, changed, changedRows);
     }
     if (deleted) {
       const deletedSet = new Set(deleted);
       changedRows = rows.filter(row => !deletedSet.has(row.id));
     }
-    setRows(changedRows);
+    console.log('+++++++++++++ Commited Changes ++++++++++++++');
+    (table_type === 'Instructors' )? auth.changeInsturctorRow(changedRows) : auth.changeSchoolRows(changedRows);
+    // setRows(changedRows);
   };
-  
-
-
   
   return (
     <Paper>
       <Grid
-        rows={rows}
+        rows={(table_type === 'Instructors' )? auth.instructorRows : auth.schoolRows}
         columns={columns}
         getRowId={getRowId}
         rootComponent={Root}

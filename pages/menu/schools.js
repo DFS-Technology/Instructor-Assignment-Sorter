@@ -5,14 +5,17 @@ import React, {useEffect, useState} from 'react';
 import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/firestore';
-export default function Schools({userPackage}) {
+import { useRequireAuth } from "../../lib/use-require-auth.js";
+
+export default function Schools() {
   const router = useRouter();
   var user =  firebase.auth().currentUser;
-  useEffect(()=>{
-    if(!user){
-      router.push('/authentication/login');
-    }
-  },  [user]);
+  const auth = useRequireAuth();
+  // useEffect(()=>{
+  //   if(!user){
+  //     router.push('/authentication/login');
+  //   }
+  // },  [user]);
   // firebase.auth().onAuthStateChanged(function(tempUser) {
   //   if(!tempUser){
   //     router.push('/authentication/login');
@@ -20,9 +23,8 @@ export default function Schools({userPackage}) {
   // });
   
   return (
-    <Layout  pageName='Schools' userPackage={userPackage}>
-          <Table table_type='Schools' userPackage={userPackage}/>
-        
+    <Layout  pageName='Schools' >
+          <Table table_type='Schools' />
     </Layout>
   );
 }

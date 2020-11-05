@@ -3,25 +3,28 @@ import Table from '../../components/table/table'
 import { useRouter } from 'next/router';
 import React, {useEffect, useState} from 'react';
 import firebase from 'firebase/app'
+import { useRequireAuth } from "../../lib/use-require-auth.js";
 import 'firebase/auth'
 import 'firebase/firestore';
 
-export default function Instructors({userPackage}) {
+export default function Instructors() {
   const router = useRouter();
   var user =  firebase.auth().currentUser;
-  useEffect(()=>{
-    if(!user){
-      router.push('/authentication/login');
-    }
-  },  [user]);
+  const auth = useRequireAuth();
+  // useEffect(()=>{
+  //   if(!user){
+  //     router.push('/authentication/login');
+  //   }
+  // },  [user]);
   // firebase.auth().onAuthStateChanged(function(tempUser) {
   //   if(!tempUser){
   //     router.push('/authentication/login');
   //   }
   // });
+  
   return (
-    <Layout  pageName='Instructors' userPackage={userPackage}>
-        <Table table_type='Instructors' userPackage={userPackage}/>
+    <Layout  pageName='Instructors' >
+        <Table table_type='Instructors' />
     </Layout>
   );
 }

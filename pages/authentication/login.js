@@ -10,7 +10,7 @@ import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
-import Router from 'next/router';
+import {useRouter} from 'next/router';
 // import Dialog from '@material-ui/core/Dialog';
 // import DialogActions from '@material-ui/core/DialogActions';
 // import DialogContent from '@material-ui/core/DialogContent';
@@ -22,7 +22,8 @@ import 'firebase/firestore';
 import { ContactlessOutlined, SettingsInputSvideoRounded } from '@material-ui/icons';
 
 import { makeStyles } from '@material-ui/core/styles';
-
+import { useAuth } from "../../lib/use-auth.js";
+import { useRequireAuth } from "../../lib/use-require-auth.js";
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -47,7 +48,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Login() {
   const classes = useStyles();
-  // const router = useRouter();
+  const auth = useAuth(); 
+  const router = useRouter();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -57,10 +59,10 @@ export default function Login() {
   var user =  firebase.auth().currentUser;
   
   useEffect(()=>{
-    if(user){
-      Router.push('/');
+    if(auth.user){
+      router.push('/');
     }
-  }, [user]);
+  }, [auth.user]);
 
   const onChangeHandler = (event) => {
       const {name, value} = event.currentTarget;
@@ -74,6 +76,23 @@ export default function Login() {
       }
   };
 
+  const onSignIn = () => {
+    auth.signin(email, password).then(function(user){
+      if(user){
+        console.log([user.uid,user.email]);
+        router.push('/');
+      }
+    }
+    ).catch(function(error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      console.log(errorCode);
+      console.log(errorMessage);
+      setErrorMsg(errorMessage);
+      setError(true);
+    });
+  };
   const onSubmitHandler = (event) => {
     event.preventDefault();
     firebase.auth().signInWithEmailAndPassword(email, password).then(function(user){
@@ -93,8 +112,7 @@ export default function Login() {
       setErrorMsg(errorMessage);
       setError(true);
     });
-
-    
+  };  
     // useEffect(() => {
     //   if(firebase.auth().currentUser){
     //     console.log(firebase.auth().currentUser);  
@@ -102,7 +120,7 @@ export default function Login() {
     //   }
     // });
     
-  }
+  
 
   return (
     <Container component="main" maxWidth="xs">
@@ -153,7 +171,7 @@ export default function Login() {
             variant="contained"
             color="primary"
             className={classes.submit}
-            onClick={(event)=>{onSubmitHandler(event)}}
+            onClick={(event)=>{onSignIn(event)}}
           >
             Sign In
           </Button>
