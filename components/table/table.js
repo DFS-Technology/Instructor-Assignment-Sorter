@@ -196,7 +196,7 @@ export default function Table({table_type}) {
   };
   
   return (
-    <Paper style={{display: 'flex', height: '100%', height: '-webkit-calc(100% - 64px)', height: '-moz-calc(100% - 64px)',height: 'calc(100% - 64px)',}}>
+    <Paper elevation = {3} style={{display: 'flex',margin: '2vh 2vh 2vh 2vh', height: '96%', height: '-webkit-calc(96% - 64px)', height: '-moz-calc(96% - 64px)',height: 'calc(96% - 64px)',}}>
       <Grid
         rows={(table_type === 'Instructors' )? auth.instructorRows : auth.schoolRows}
         columns={columns}

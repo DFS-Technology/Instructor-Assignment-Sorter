@@ -17,22 +17,6 @@ export default function MyApp({ Component, pageProps }) {
   
   
   initFirebase();
-  
-  // const tempData = getInitialData();
-  // const [seasonList, setSeasonList] = useState(tempData[0]);
-  
-  // console.log('Check Initial Data:', tempData, tempData[0], tempData[1]);
-  // const [currentSeason, setCurrentSeason] = useState(tempData[1]);
-  
-  
-  
-  // const userPackage = {
-  //   seasons: seasonList,
-  //   setSeasons: setSeasonList,
-  //   curSeason: currentSeason,
-  //   setCurSeason: setCurrentSeason,
-  // }
-  // console.log('Check UserPackage: ',userPackage.seasons,userPackage.curSeason);
 
   React.useEffect(() => {
     // Remove the server-side injected CSS.
