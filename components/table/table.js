@@ -218,7 +218,7 @@ export default function Table({table_type}) {
         
         <EditingState
           onCommitChanges={commitChanges}
-          defaultEditingRowIds={[0]}
+          defaultEditingRowIds={[]}
         />
         <DataTypeProviders BooleanColumns={BooleanColumns} ShirtColumns={ShirtColumns}/>
         <DragDropProvider />
