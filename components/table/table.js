@@ -81,13 +81,13 @@ const TableEditCommandBase = ({
   </TableEditColumn.Command>
 );
 const instructorDefaultColumnWidths = [
-  { columnName: 'name', width: 80 },
+  { columnName: 'name', width: 165 },
   { columnName: 'gender', width: 90 },
   { columnName: 'schoolYear', width: 130 },
   { columnName: 'major', width: 80 },
   { columnName: 'university', width: 110 },
-  { columnName: 'region', width: 90 },
-  { columnName: 'startingLocation', width: 100 },
+  { columnName: 'region', width: 125 },
+  { columnName: 'startingLocation', width: 185 },
   { columnName: 'car', width: 100 },
   { columnName: 'returner', width: 110 },
   { columnName: 'shirtSize', width: 130 },
@@ -137,7 +137,7 @@ export const TableEditCommand = withStyles(styles, { name: 'TableEditCommand' })
 const getRowId = row => row.id;
 
 
-const Root = props => <Grid.Root {...props} style={{ height: '100%' , width: '100%'}} />;
+const Root = props => <Grid.Root {...props} style={{ display: 'flex', height: '100%' , width: '100%'}} />;
 
 export default function Table({table_type}) {
   const auth = useAuth();
@@ -196,7 +196,7 @@ export default function Table({table_type}) {
   };
   
   return (
-    <Paper>
+    <Paper style={{display: 'flex', height: '100%', height: '-webkit-calc(100% - 64px)', height: '-moz-calc(100% - 64px)',height: 'calc(100% - 64px)',}}>
       <Grid
         rows={(table_type === 'Instructors' )? auth.instructorRows : auth.schoolRows}
         columns={columns}
@@ -223,8 +223,8 @@ export default function Table({table_type}) {
         <DataTypeProviders BooleanColumns={BooleanColumns} ShirtColumns={ShirtColumns}/>
         <DragDropProvider />
         <VirtualTable 
-          height='auto'
-          width='auto'
+          height='100%'
+          width='100%'
         />
         
         <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
@@ -254,5 +254,6 @@ export default function Table({table_type}) {
          null}
       </Grid>
     </Paper>
+
   );
 };

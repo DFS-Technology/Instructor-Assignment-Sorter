@@ -42,6 +42,7 @@ export default function Layout({children, pageName}) {
             <main className={classes.content}>
                 <div className={classes.appBarSpacer} />
                 {children}
+                
             </main>
         </div>
     );

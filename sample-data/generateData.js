@@ -3,7 +3,7 @@
 var instructor = {
     id :{ incrementalId: 0},
     name : { faker: 'name.findName'},
-    gender : { faker: 'name.gender' },
+    gender : { chance: 'gender' },
     schoolYear : {values: ['1st Year', '2nd Year', '3rd Year', '4th Year', '4+ Years']},
     major : {values: ['CS', 'EECS', 'Maths', 'Physics', 'Econ']},
     university : {values: ['UCI', 'UCLA', 'USC', 'UC Davis', 'UCSC']},
