@@ -196,7 +196,7 @@ export default function Table({table_type}) {
   };
   
   return (
-    <Paper elevation = {3} style={{display: 'flex',margin: '2vh 2vh 2vh 2vh', height: '96%', height: '-webkit-calc(96% - 64px)', height: '-moz-calc(96% - 64px)',height: 'calc(96% - 64px)',}}>
+    <Paper elevation = {3} style={{borderRadius: '1.3vh', display: 'flex',margin: '2vh 2vh 2vh 2vh', height: '96%', height: '-webkit-calc(96% - 64px)', height: '-moz-calc(96% - 64px)',height: 'calc(96% - 64px)',}}>
       <Grid
         rows={(table_type === 'Instructors' )? auth.instructorRows : auth.schoolRows}
         columns={columns}
@@ -204,23 +204,27 @@ export default function Table({table_type}) {
         rootComponent={Root}
       >
         
-        <FilteringState defaultFilters={[]} />
+        <SortingState
+          defaultSorting={[{ columnName: 'name', direction: 'asc' }]}
+        />
+        <IntegratedSorting />
+        
+        <DataTypeProviders BooleanColumns={BooleanColumns} ShirtColumns={ShirtColumns}/>
+        {filterToggle == 1 ? <FilteringState defaultFilters={[]} /> :
+         filterToggle == 2 ? <FilteringState defaultFilters={[]} />: 
+         null}
+        
         <IntegratedFiltering />
         <PagingState
           defaultCurrentPage={0}
           defaultPageSize={25}
         />
         <IntegratedPaging />
-        <SortingState
-          defaultSorting={[{ columnName: 'name', direction: 'asc' }]}
-        />
-        <IntegratedSorting />
-        
         <EditingState
           onCommitChanges={commitChanges}
           defaultEditingRowIds={[]}
         />
-        <DataTypeProviders BooleanColumns={BooleanColumns} ShirtColumns={ShirtColumns}/>
+        
         <DragDropProvider />
         <VirtualTable 
           height='100%'
