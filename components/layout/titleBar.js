@@ -21,7 +21,61 @@ import MenuIcon from '@material-ui/icons/Menu';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 
-import { useAuth } from "../../lib/use-auth.js";
+import { useAuth } from "../../lib/useAuth.js";
+import { useRouter } from 'next/router';
+
+export default function appBar({open, handleDrawerOpen}){
+    const classes = useStyles();
+    const {pageName, currentSeason, setCurrentSeason, seasonList} = useAuth();
+    const router = useRouter();
+    
+    const handleSeasonChange = (value) => { setCurrentSeason(value); router.push('/'); }
+
+    return (
+      <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
+          
+          <Toolbar className={classes.toolbar}>
+              
+              <IconButton edge="start" color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} className={clsx(classes.menuButton, open && classes.menuButtonHidden)}>
+                
+                <MenuIcon />
+              </IconButton>
+
+              <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+                
+                {pageName}
+              </Typography>
+              
+              <Grid container direction="row" justify="flex-end" alignItems="center" spacing={2} style={{width: 'auto'}}>
+                
+                <Grid item>
+                
+                <FormControl className={classes.formControl}>
+                  
+                  <InputLabel id="SeasonLabel">Season</InputLabel>
+                  
+                  <Select labelId="SeasonLabel" id="SeasonSelect" value={currentSeason} onChange={(event)=>handleSeasonChange(event.target.value)}>
+                    {seasonList.map(season => (<MenuItem  value={season} key={season}>{season}</MenuItem >))}
+                  </Select>
+                </FormControl>
+                </Grid>
+
+                <Grid item>
+                <Fab color="secondary" size='small' aria-label="delete">
+                    <DeleteOutlineIcon />
+                </Fab>
+                </Grid>
+
+                <Grid item>
+                <Fab color="secondary" size='small' stype aria-label="add">
+                    <AddIcon />
+                </Fab>
+                </Grid>
+                </Grid>
+          </Toolbar>
+      </AppBar>
+    );
+};
 
 const drawerWidth = 240;
 
@@ -58,69 +112,3 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 120,
   },
 }));
-
-export default function appBar({open, handleDrawerOpen, pageName}){
-    const classes = useStyles();
-    const auth = useAuth();
-
-    // const setCurSeasonHandler = (event) => {
-    //   userPackage.setCurSeason([event.target.value]);
-    // };
-    
-    return (
-      <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
-          <Toolbar className={classes.toolbar}>
-              <IconButton
-                  edge="start"
-                  color="inherit"
-                  aria-label="open drawer"
-                  onClick={handleDrawerOpen}
-                  className={clsx(classes.menuButton, open && classes.menuButtonHidden)}
-              >
-                <MenuIcon />
-              </IconButton>
-
-
-              <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-                {pageName}
-              </Typography>
-              <Grid
-                container
-                direction="row"
-                justify="flex-end"
-                alignItems="center"
-                spacing={2}
-                style={{width: 'auto'}}
-              >
-                <Grid item>
-                <FormControl className={classes.formControl}>
-                  <InputLabel id="SeasonLabel">Season</InputLabel>
-                  <Select
-                      labelId="SeasonLabel"
-                      id="SeasonSelect"
-                      value={auth.currentSeason}
-                      onChange={(event)=>auth.updateCurrentSeason(event.target.value)}
-                  >
-                    {/* {userPackage.seasons.map(season => (<MenuItem  value={season} key={season}>{season}</MenuItem >))} */}
-                    {auth.seasonList.map(season => (<MenuItem  value={season} key={season}>{season}</MenuItem >))}
-                  </Select>
-                </FormControl>
-                </Grid>
-
-                <Grid item>
-                <Fab color="secondary" size='small' aria-label="delete">
-                    <DeleteOutlineIcon />
-                </Fab>
-                </Grid>
-
-                <Grid item>
-                <Fab color="secondary" size='small' stype aria-label="add">
-                    <AddIcon />
-                </Fab>
-                </Grid>
-                </Grid>
-          </Toolbar>
-      </AppBar>
-    );
-};
-

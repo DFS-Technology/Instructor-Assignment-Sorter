@@ -1,7 +1,4 @@
-import React from 'react';
-
-import Nextlink from 'next/link'
-
+import { useAuth } from '../../lib/useAuth';
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -10,28 +7,28 @@ import ListItemText from '@material-ui/core/ListItemText';
 
 import HomeIcon from '@material-ui/icons/Home';
 import PeopleIcon from '@material-ui/icons/People';
-import SchoolIcon from '@material-ui/icons/School';
 import ExtensionIcon from '@material-ui/icons/Extension';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import ApartmentIcon from '@material-ui/icons/Apartment';
 
 export function MenuItems(){
+  const {setPageName} = useAuth();
   const menuItems = [
-    {address: '/', name: 'Home', icon: <HomeIcon />},
-    {address: '/menu/instructors', name: 'Instructors', icon: <PeopleIcon />},
-    {address: '/menu/schools', name: 'Schools', icon: <ApartmentIcon />},
-    {address: '/menu/programs', name: 'Programs', icon: <ExtensionIcon />},
+    {name: 'Home',        icon: <HomeIcon />      },
+    {name: 'Instructors', icon: <PeopleIcon />    },
+    {name: 'Schools',     icon: <ApartmentIcon /> },
+    {name: 'Programs',    icon: <ExtensionIcon /> },
   ];
 
   return (
     <List>
       {menuItems.map((item) => 
-        <Nextlink key={'Link'.concat(item.name)} href={item.address}>
-          <ListItem button key={'button'.concat(item.name)}>
-            <ListItemIcon key={'icon'.concat(item.name)}>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.name} key={'text'.concat(item.name)}/>
-          </ListItem>
-        </Nextlink>
+        <ListItem button onClick={()=>setPageName(item.name)} key={'button'.concat(item.name)}>
+          <ListItemIcon key={'icon'.concat(item.name)}>
+            {item.icon}
+          </ListItemIcon>
+          <ListItemText primary={item.name} key={'text'.concat(item.name)}/>
+        </ListItem>
       )}
     </List>
   );

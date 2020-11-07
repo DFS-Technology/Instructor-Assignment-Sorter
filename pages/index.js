@@ -1,31 +1,26 @@
-import Head from 'next/head'
 import Layout from '../components/layout/layout'
-import styles from '../styles/Home.module.css'
-import { useRouter } from 'next/router';
-import React, {useEffect, useState} from 'react';
-import firebase from 'firebase/app'
-import 'firebase/auth'
-import 'firebase/firestore';
-import { useRequireAuth } from "../lib/use-require-auth.js";
-export default function Home() {
-  const router = useRouter();
-  var user =  firebase.auth().currentUser;
-  const auth = useRequireAuth();
-  // useEffect(()=>{
-  //   if(!user){
-  //     router.push('/authentication/login');
-  //   }
-  // },  [user]);
-  // firebase.auth().onAuthStateChanged(function(tempUser) {
-  //   if(!tempUser){
-  //     router.push('/authentication/login');
-  //   }
-  // });
+import Table from '../components/table/table'
 
-  
-  console.log(auth.user);
+import { useRequireAuth } from "../lib/useAuth";
+import { useData } from "../lib/useData";
+
+import Loading from '../components/loading';
+
+export default function App() {
+  console.log("1. App Main Page");
+  const auth = useRequireAuth();
+  const {seasonList, instructorData, schoolData} = useData(auth.currentSeason);
+
+  if(!auth || !auth.user || !seasonList || !instructorData || !schoolData)
+  {return (<Loading />);}
+  auth.setSeasonList(seasonList);
+  auth.setCurrentSeason(auth.currentSeason?auth.currentSeason:seasonList[0]);
+  if(!auth.seasonList || !auth.currentSeason){return (<Loading />);}
   return (
-    <Layout pageName ='Homepage' >
+    <Layout  pageName={auth.pageName}>
+      {auth.pageName === 'Instructors' ? <Table table_type='Instructors' data={instructorData}/>: null}
+      {auth.pageName === 'Schools' ? <Table table_type='Schools' data={schoolData}/>: null}
     </Layout>
   );
 }
+// Create extra component so Data doesn't get downloaded until auth.
