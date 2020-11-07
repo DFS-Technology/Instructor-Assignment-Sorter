@@ -14,6 +14,7 @@
     "@material-ui/core": "^4.11.0",
     "@material-ui/data-grid": "^4.0.0-alpha.8",
     "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.56",
     "devextreme": "^20.2.3",
     "firebase": "^8.0.1",
     "mocker-data-generator": "^2.10.0",
