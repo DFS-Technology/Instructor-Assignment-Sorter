@@ -50,6 +50,10 @@ export default function Login() {
   const [error, setError] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
+  if(!auth || auth.user){
+    return(<Loading/>);
+  }
+
   const onChangeHandler = (event) => {
       const {name, value} = event.currentTarget;
       setError(false);
@@ -75,9 +79,7 @@ export default function Login() {
     });
   };
 
-  if(!auth){
-    return(<Loading/>);
-  }
+  
 
   return (
     <Container component="main" maxWidth="xs">

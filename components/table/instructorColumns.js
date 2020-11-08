@@ -28,3 +28,4 @@ export const instructorDefaultColumnWidths = [
   { columnName: 'languages', width: 120 },
 ];
 
+export const instructorDefaultColumnOrder = ['name','gender','schoolYear','major','university','region','startingLocation','car','returner','shirtSize','programs','languages'];

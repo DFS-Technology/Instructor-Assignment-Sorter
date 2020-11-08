@@ -6,8 +6,8 @@ import { withStyles } from '@material-ui/core/styles';
 import DataTypeProviders from './datatypeProviders';
 import {deleteDocuments, addDocuments, editDocuments} from '../../lib/firestoreApi';
 
-import {instructorColumns, instructorDefaultColumnWidths} from './instructorColumns';
-import {schoolColumns, schoolDefaultColumnWidths} from './schoolColumns';
+import {instructorColumns, instructorDefaultColumnWidths, instructorDefaultColumnOrder} from './instructorColumns';
+import {schoolColumns, schoolDefaultColumnWidths,schoolDefaultColumnOrder} from './schoolColumns';
 
 import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
@@ -18,7 +18,10 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 import CheckIcon from '@material-ui/icons/Check';
 
 import { useAuth } from "../../lib/useAuth.js";
+import { useData } from "../../lib/useData";
 import {mutate} from 'swr';
+
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import {
   EditingState,
@@ -76,7 +79,6 @@ const TableEditCommandBase = ({id, text, ...restProps}) => (
     ):null}
     {...restProps}
   >
-     {/*TODO: Try putting icons here +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/}
   </TableEditColumn.Command>
 );
 
@@ -88,19 +90,36 @@ const getRowId = row => row.id;
 
 const Root = props => <Grid.Root {...props} style={{ display: 'flex', height: '100%' , width: '100%'}} />;
 
-export default function Table({table_type, data}) {
+export default function Table({table_type, rows}) {
   const auth = useAuth();
+  
+  const error = false;
 
   const [columns] = useState((table_type === 'Instructors' )? instructorColumns : schoolColumns);
-  console.log('rowData Reset: ')
-  const [rows, setRows] = useState(data);
   const [BooleanColumns] = useState((table_type === 'Instructors' )? ['car','returner'] : []);
   const [ShirtColumns] = useState((table_type === 'Instructors' )? ['shirtSize'] : []);
-  const [defaultHiddenColumnNames] = useState([]);
   const [defaultColumnWidths] = useState((table_type === 'Instructors' )? instructorDefaultColumnWidths : schoolDefaultColumnWidths);
+  const [defaultColumnOrder] = useState((table_type === 'Instructors' )? instructorDefaultColumnOrder : schoolDefaultColumnOrder);
+  const [defaultHiddenColumnNames] = useState([]);
 
   const [pageSizes] = useState([5, 10, 25, 50, 0]);
   const [filterToggle, setFilterToggle] = useState(0);
+
+
+  if(auth.currentSeason === ''){
+    return(<h1>Season not selected.</h1>);
+  }else if(!rows && !error){
+    return (
+      <Paper elevation = {3} style={{borderRadius: '1.3vh', display: 'flex',margin: '2vh 2vh 2vh 2vh', height: '96%', height: '-webkit-calc(96% - 64px)', height: '-moz-calc(96% - 64px)',height: 'calc(96% - 64px)',}}>
+        <CircularProgress color="secondary" />
+      </Paper>
+    );
+  }else if(error){
+    console.log("Error::useData(table_type,auth.)::Error", error);
+    return (<h1>ERROR. Check console logs</h1>);
+  }
+
+
 
   const ToolbarRootBase = ({children}) => (
     <Toolbar.Root>
@@ -138,11 +157,7 @@ export default function Table({table_type, data}) {
     }
     mutate([table_type,auth.currentSeason],changedRows,false);
     // mutate([table_type,auth.currentSeason],changedRows,true);
-    setRows(changedRows);
   };
-  if(auth.currentSeason === ''){
-    return(<div>Season not selected.</div>);
-  }
   return (
     <Paper elevation = {3} style={{borderRadius: '1.3vh', display: 'flex',margin: '2vh 2vh 2vh 2vh', height: '96%', height: '-webkit-calc(96% - 64px)', height: '-moz-calc(96% - 64px)',height: 'calc(96% - 64px)',}}>
       <Grid
@@ -177,7 +192,7 @@ export default function Table({table_type, data}) {
         
         <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
         <TableColumnReordering
-          defaultOrder={['name','gender','schoolYear','major','university','region','startingLocation','car','returner','shirtSize','programs','languages']}
+          defaultOrder={defaultColumnOrder}
         />
         <TableHeaderRow 
           showSortingControls 

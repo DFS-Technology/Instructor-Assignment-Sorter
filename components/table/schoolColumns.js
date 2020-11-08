@@ -23,3 +23,4 @@ export const schoolColumns = [
     { name: 'locationPref', title: 'Location Prefrence'},
   ];
   
+  export const schoolDefaultColumnOrder = ['name','address','schoolYear','programs','numInstructors','schedule','languageRequests','vtrOrinPerson','locationPref'];

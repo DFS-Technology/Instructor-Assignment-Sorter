@@ -1,6 +1,4 @@
 import React, {useState} from 'react';
-import Button from '@material-ui/core/Button';
-
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -22,100 +20,69 @@ import MenuIcon from '@material-ui/icons/Menu';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
-
 import { useAuth } from "../../lib/useAuth.js";
 import { useRouter } from 'next/router';
-import {mutate} from 'swr';
-
-import firebase from 'firebase/app'
-import 'firebase/database';
+import { DeleteSeason, AddSeason } from './addDeleteSeasons';
 
 export default function appBar({open, handleDrawerOpen}){
     const classes = useStyles();
-    const {pageName, currentSeason, setCurrentSeason, seasonList, setSeasonList} = useAuth();
+    const {setPageName, pageName, currentSeason, setCurrentSeason, seasonList} = useAuth();
     const router = useRouter();
     const [deleteOpen, setDeleteOpen] = useState(false);
+    const [addOpen, setAddOpen] = useState(false);
     
-    const handleSeasonChange = (value) => { setCurrentSeason(value); router.push('/'); }
-    const handleAdd = ()=>{};
-    const handleSeasonDelete = ()=>{
-      setDeleteOpen(false);
-      var newSeasonList = seasonList.filter(season=> season!==currentSeason);
-      mutate(['Seasons',null],newSeasonList,false);
-      // firebase.database().ref(currentSeason).remove();
-      // firebase.database().ref('Seasons/'+currentSeason).remove();
-      setSeasonList(newSeasonList);
-      setCurrentSeason(newSeasonList[0]);
-      router.push('/');
-    };
-    const action = (
-       <>
-      <Button style={{color: "#f44336"}} onClick={()=>{handleSeasonDelete()}} size="small">Delete</Button>
-      <Button style={{color: "#f44336"}} onClick={()=>setDeleteOpen(false)} size="small">Cancel</Button>
-       </>
-    );
-
+    const handleSeasonChange = (value) => { setCurrentSeason(value);}
+    
     return (
-      <>
       <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
-          
           <Toolbar className={classes.toolbar}>
               
-              <IconButton edge="start" color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} className={clsx(classes.menuButton, open && classes.menuButtonHidden)}>
-                
-                <MenuIcon />
-              </IconButton>
-
-              <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-                
-                {pageName}
-              </Typography>
+              <IconButton children={<MenuIcon />} edge="start" color="inherit" aria-label="open drawer" onClick={handleDrawerOpen} className={clsx(classes.menuButton, open && classes.menuButtonHidden)}/>
+              <Typography children={pageName} component="h1" variant="h6" color="inherit" noWrap className={classes.title}/>
               
               <Grid container direction="row" justify="flex-end" alignItems="center" spacing={2} style={{width: 'auto'}}>
                 
                 <Grid item>
-                
-                <FormControl className={classes.formControl}>
-                  
-                  <InputLabel id="SeasonLabel">Season</InputLabel>
-                  
-                  <Select labelId="SeasonLabel" id="SeasonSelect" value={currentSeason} onChange={(event)=>handleSeasonChange(event.target.value)}>
-                    {seasonList.map(season => (<MenuItem  value={season} key={season}>{season}</MenuItem >))}
-                  </Select>
-                </FormControl>
+                  <FormControl className={classes.formControl}>
+                    <InputLabel 
+                      children={'Season'}
+                      id="Season-Select-Label"/>
+                    <Select 
+                      children={seasonList.map(
+                        (Season) => 
+                          <MenuItem children={Season} value={Season} key={Season}/>
+                      )}
+                      id="Season-Select" labelId="Season-Select-Label"  
+                      value={currentSeason} 
+                      onChange={(e)=>handleSeasonChange(e.target.value)}
+                    />
+                  </FormControl>
                 </Grid>
 
                 <Grid item>
-                  <Fab color="secondary" size='small' aria-label="delete" onClick={()=>setDeleteOpen(true)}>
-                      <DeleteOutlineIcon />
-                  </Fab>
+                  <Fab
+                    children={<DeleteOutlineIcon />} 
+                    aria-label="Delete-Season" color="secondary" size='small'  
+                    onClick={()=>setDeleteOpen(true)}
+                  />
+                  <DeleteSeason setDeleteOpen={setDeleteOpen} deleteOpen={deleteOpen}/>
                 </Grid>
 
                 <Grid item>
-                  <Fab color="secondary" size='small' stype aria-label="add" onClick={handleAdd}>
-                      <AddIcon />
-                  </Fab>
+                  <Fab
+                    children={<AddIcon />} 
+                    aria-label="Add-Season" color="secondary" size='small'  
+                    onClick={() => setAddOpen(true)}
+                  />
+                  <AddSeason setAddOpen={setAddOpen} addOpen={addOpen} />
                 </Grid>
+
               </Grid>
           </Toolbar>
       </AppBar>
-      <Snackbar style={{width:"100%"}} message={"Are you sure you want to delete \""+currentSeason+"\" database?"} anchorOrigin={{vertical:'bottom', horizontal:'center'}} open={deleteOpen} action={action}></Snackbar>
-      {/* <div style={{maxWidth: 400}}>
-      <SnackbarContent message="I love snacks." action={action} /></div> */}
-      {/* <Snackbar style={{width:'100%', marginTop:"16px"}} anchorOrigin={{vertical:'bottom', horizontal:'center'}} open={confirmOpen} action={action}>
-        <MuiAlert style={{width:'auto', height:'auto', marginTop:"16px"}}elevation={6} variant="filled" severity="warning">
-          <div style={{display:"inline", alignContent:"center"}}>Are you sure you want to delete the <Typography  noWarp display="inline" style={{fontWeight: 500}}>{currentSeason}</Typography> database?
-          <Button variant="contained"  size="small" style={{margin:'0px 10px'}}>Yes</Button>
-          <Button color="secondary" size="small" style={{margin:'0px 10px'}}>Cancel</Button></div>
-          </MuiAlert>
-      </Snackbar> */}
-      </>
     );
 };
-// <div style={{display:'inline',color:'black', fontWeight:500, fontSize:'1.1em'}}></div>
+
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
