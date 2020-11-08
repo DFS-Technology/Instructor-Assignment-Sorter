@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -23,6 +23,8 @@ import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import { useAuth } from "../../lib/useAuth.js";
 import { useRouter } from 'next/router';
 import { DeleteSeason, AddSeason } from './addDeleteSeasons';
+
+import Tooltip from '@material-ui/core/Tooltip';
 
 export default function appBar({open, handleDrawerOpen}){
     const classes = useStyles();
@@ -61,7 +63,7 @@ export default function appBar({open, handleDrawerOpen}){
 
                 <Grid item>
                   <Fab
-                    children={<DeleteOutlineIcon />} 
+                    children={<LightTooltip children={<DeleteOutlineIcon />} title="Delete Season" placement="bottom-end"/>}
                     aria-label="Delete-Season" color="secondary" size='small'  
                     onClick={()=>setDeleteOpen(true)}
                   />
@@ -70,7 +72,7 @@ export default function appBar({open, handleDrawerOpen}){
 
                 <Grid item>
                   <Fab
-                    children={<AddIcon />} 
+                    children={<LightTooltip children={<AddIcon/>}  title="New Season" placement="bottom-start"/>} 
                     aria-label="Add-Season" color="secondary" size='small'  
                     onClick={() => setAddOpen(true)}
                   />
@@ -118,3 +120,12 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 120,
   },
 }));
+
+const LightTooltip = withStyles((theme) => ({
+  tooltip: {
+    backgroundColor: theme.palette.common.white,
+    color: 'rgba(0, 0, 0, 0.87)',
+    boxShadow: theme.shadows[1],
+    fontSize: 11,
+  },
+}))(Tooltip);

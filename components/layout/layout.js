@@ -20,15 +20,13 @@ export default function Layout({children}) {
         <div className={classes.root}>
             
             <TitleBar open={open} handleDrawerOpen={handleDrawerOpen} />
-            
             <Menu open={open} handleDrawerClose={handleDrawerClose}/>
-                
-            <main className={classes.content}>
-                
+            
+            <main className={classes.content}> 
                 <div className={classes.appBarSpacer} />
-                
                 {children}
             </main>
+        
         </div>
     );
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Paper from '@material-ui/core/Paper';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -22,6 +22,26 @@ import { useData } from "../../lib/useData";
 import {mutate} from 'swr';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
+
+import { CSVLink } from "react-csv";
+import GetAppIcon from '@material-ui/icons/GetApp';
+import Tooltip from '@material-ui/core/Tooltip';
+
+const instructorExportColumns = [
+    { key: 'name', label: 'Name'},
+    { key: 'gender', label: 'Gender'},
+    { key: 'schoolYear', label: 'School Year'},
+    { key: 'major', label: 'Major'},
+    { key: 'university', label: 'University'},
+    { key: 'region', label: 'Region'},
+    { key: 'startingLocation', label: 'Address'},
+    { key: 'car', label: 'Car 🚗', description:'Weather they have a car or not'},
+    { key: 'returner', label: 'Returning'},
+    { key: 'shirtSize', label: 'Shirt Size 👕'},
+    { key: 'programs', label: 'Programs'},
+    { key: 'languages', label: 'Languages'},
+  ];
+
 
 import {
   EditingState,
@@ -54,7 +74,7 @@ import {
 
   PagingPanel,
 
-  TableFilterRow
+  TableFilterRow, 
 } from '@devexpress/dx-react-grid-material-ui';
 
 const styles = theme =>({
@@ -67,15 +87,29 @@ const TableEditCommandBase = ({id, text, ...restProps}) => (
   <TableEditColumn.Command
     id={id}
     text={id === 'add' ? (
+      <Tooltip title="New" placement="top">
       <AddIcon />
+      </Tooltip>
     ): id === 'edit' ? (
+      <Tooltip title="Edit">
       <EditIcon />
+      </Tooltip>
+      
     ):id === 'delete' ? (
+      <Tooltip title="Delete">
       <DeleteIcon />
+      </Tooltip>
+      
     ):id === 'commit' ? (
+      <Tooltip title="Save">
       <CheckIcon />
+      </Tooltip>
+      
     ):id === 'cancel' ? (
+      <Tooltip title="Cancel">
       <ClearIcon />
+      </Tooltip>
+      
     ):null}
     {...restProps}
   >
@@ -123,11 +157,25 @@ export default function Table({table_type, rows}) {
 
   const ToolbarRootBase = ({children}) => (
     <Toolbar.Root>
-      <div style={{display: 'flex', margin: '0px 0px 0px auto'}}>
+      <div style={{display: 'flex', justifyContent: 'space-between', width:'100%'}}>
+      <div style={{display: 'flex'}}>
+      <CSVLink data={rows} headers={instructorExportColumns}>
+      <Tooltip title="Export to CSV">
+        <IconButton >
+          <GetAppIcon/>
+        </IconButton>
+      </Tooltip>
+      
+      </CSVLink>
+      </div>
+      <div style={{display: 'flex'}}>
       {children}
+      <Tooltip title={"Filter "+filterToggle+"/2"}>
       <IconButton onClick={() => setFilterToggle((filterToggle+1)%3)}>
         <FilterListIcon />
       </IconButton>
+      </Tooltip>
+      </div>
       </div>
     </Toolbar.Root>
   );
@@ -204,7 +252,7 @@ export default function Table({table_type, rows}) {
           pageSizes={pageSizes}
         />
         <Toolbar rootComponent={ToolbarRoot}/>
-        <ColumnChooser/>
+        <ColumnChooser messages={{showColumnChooser:"Hide Columns"}}/>
         <TableEditRow />
         <TableEditColumn
           showAddCommand
