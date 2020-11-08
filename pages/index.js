@@ -1,6 +1,6 @@
 import Layout from '../components/layout/layout'
 import Table from '../components/table/table'
-import Programs from '../copmonents/sortingPagesComponents/programs'
+// import Programs from '../copmonents/sortingPagesComponents/programs'
 
 import { useRequireAuth } from "../lib/useAuth";
 import { useData } from "../lib/useData";
@@ -36,7 +36,7 @@ export default function App() {
       {auth.pathName === 'Home'         ?   null: null}
       {auth.pageName === 'Instructors'  ?   <Table table_type={auth.pageName} rows={instructorRows}/>: null}
       {auth.pageName === 'Schools'      ?   <Table table_type={auth.pageName} rows={schoolRows}/>:     null}
-      {auth.pathName === 'Programs'     ?   <Programs/>: null}
+      {/* {auth.pathName === 'Programs'     ?   <Programs/>: null} */}
     </Layout>
   );
 }
