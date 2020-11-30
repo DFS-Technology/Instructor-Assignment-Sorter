@@ -69,7 +69,8 @@
       const matchObject = await fetch(
               'https://apurva29.pythonanywhere.com/sort',
               request)
-          .then(response => response.json());
+          .then(response => response.json())
+          .catch(error => console.log('Error Fetching Sort api',error));
       console.log(matchObject);
       const instructorDict = {};
       const unassignedInstructors = {};
