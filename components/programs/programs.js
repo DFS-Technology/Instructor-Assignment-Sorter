@@ -103,7 +103,7 @@
         programData[program]['assigned_schools'] = assignedSchools;
         programData[program]['assigned_instructors'] = assignedInstructors;
       }
-      programData['unassigned_instructors'] = Object.keys(unassignedInstructor).length;
+      programData['unassigned_instructors'] = Object.keys(unassignedInstructors).length;
       mutate(['Programs', currentSeason], programData, false);
       setLoading(false);
       setRawSchoolData(schoolDict);
