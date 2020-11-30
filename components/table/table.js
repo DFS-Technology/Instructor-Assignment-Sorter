@@ -266,6 +266,7 @@ export default function Table({
   );
   const ToolbarRoot = withStyles(styles, { name: 'ToolbarRoot' })(ToolbarRootBase);
   const commitChanges = ({ added, changed, deleted }) => {
+    return null;
     let changedRows;
     if (added) {
       const newIds = addDocuments(auth.currentSeason, table_type, added);
