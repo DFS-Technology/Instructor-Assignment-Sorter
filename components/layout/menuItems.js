@@ -14,10 +14,10 @@ import ApartmentIcon from '@material-ui/icons/Apartment';
 export function MenuItems(){
   const {setPageName} = useAuth();
   const menuItems = [
-    {name: 'Home',        icon: <HomeIcon />      },
+    // {name: 'Home',        icon: <HomeIcon />      },
+    {name: 'Programs',    icon: <ExtensionIcon /> },
     {name: 'Instructors', icon: <PeopleIcon />    },
     {name: 'Schools',     icon: <ApartmentIcon /> },
-    {name: 'Programs',    icon: <ExtensionIcon /> },
   ];
 
   return (

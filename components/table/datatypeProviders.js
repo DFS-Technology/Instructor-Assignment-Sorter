@@ -5,9 +5,20 @@ import MenuItem from '@material-ui/core/MenuItem';
 import {Plugin} from '@devexpress/dx-react-core';
 import { DataTypeProvider } from '@devexpress/dx-react-grid';
 
+import {useAuth} from '../../lib/useAuth';
+import { stringNumberComparer } from '@material-ui/data-grid';
+
+
 
 const ShirtFormatter = ({ value }) => <Chip label={value} />;
-const BooleanFormatter = ({ value }) => <Chip label={value ? 'Yes' : 'No'} />;
+const BooleanFormatter = ({ value }) => <Chip label={value ? 'Yes' : 'No'} style={{backgroundColor:value?'#F9DEA6':null}} />;
+// const ProgramsFormatter = ({ value }) => {
+//     const Chips = {};
+//     for(const program in value){
+        
+//     }
+//     return <><Chip label={value ? 'Yes' : 'No'} /></>
+// };
 
 
 function ShirtEditor({ value, onValueChange }){
@@ -60,35 +71,107 @@ function ShirtTypeProvider(props){
         />
     );
 };
-// function ProgramTypeProvider(props){
-//     return (
-//         <DataTypeProvider
-//             formatterComponent={ProgramFormatter}
-//             editorComponent={ProgramEditor}
-//             {...props}
-//         />
-//     );
-// };
 
-// function ScheduleTypeProvider(props){
-//     return (
-//         <DataTypeProvider
-//             formatterComponent={ScheduleFormatter}
-//             editorComponent={ScheduleEditor}
-//             {...props}
-//         />
-//     );
-// };
+const scheduleVal = {
+    'Monday': 0,
+    'Tuesday': 1,
+    'Wednesday': 2,
+    'Thursday': 3,
+    'Friday': 4,
+};
+const scheduleText = {
+    'Monday': 'Mon',
+    'Tuesday': 'Tue',
+    'Wednesday': 'Wed',
+    'Thursday': 'Thu',
+    'Friday': 'Fri',
+};
+const dayVal = {
+    'Mon':0,
+    'Tue':1,
+    'Wed':2,
+    'Thu':3,
+    'Fri':4,
+};
+const numList = [1,2,3,4,5];
+const dayColor = numList.map((item) => 'hsl(41,81%,'+String(63*(1+(item-3)*0.17))+'%)');
 
-function DataTypeProviders({BooleanColumns, ShirtColumns, ProgramColumns, ScheduleColumns}){
+
+
+const ScheduleFormatter = ({row: {id}, value}) => {
+    if(!value || !Object.keys(value).length){
+        return <></>;
+    }
+    const schedule = [];
+    for (const day in  value){
+        for(const timeSlot of value[day]){
+            const chipText = scheduleText[day]+' '+timeSlot['start']+'-'+timeSlot['end'];
+            schedule.push([chipText, dayColor[scheduleVal[day]]]);
+        }
+    }
+    schedule.sort((a,b)=>dayVal[a[0].slice(0,3)]-dayVal[b[0].slice(0,3)]);
+    return (<div>{schedule.map((chipInfo) => (<Chip 
+        label={chipInfo[0]}
+        key={String(id)+'ScheduleChip'+chipInfo[0]}
+        style={{margin:'1.5px', backgroundColor:chipInfo[1],fontWeight:'450'}}
+        // style={{backgroundColor:chipColor, color:textColor,}}
+    />))}</div>);
+};
+export function ScheduleTypeProvider(props){
+    return (
+        <DataTypeProvider
+            formatterComponent={ScheduleFormatter}
+            {...props}
+        />
+    );
+  };
+  const ListFormatter = ({row:{id}, value}) => {
+    if(!value || !value.length){
+        return <></>;
+    }
+    const listItems = [];
+    for (const item of value){
+        listItems.push(<Chip 
+          label={item}
+          key={String(id)+'ListItem'+item}
+          style={{margin:'1.5px'}}
+        />);
+    }
+    return (<>{listItems}</>);
+  };
+  const  ListTypeProvider = (props) => {
+    return (
+        <DataTypeProvider
+            formatterComponent={ListFormatter}
+            {...props}
+        />
+    );
+  };
+
+function DataTypeProviders({BooleanColumns, ShirtColumns, ScheduleColumns,ListColumns}){
     return (
         <Plugin>
             <BooleanTypeProvider for={BooleanColumns} />
             <ShirtTypeProvider for={ShirtColumns} />
-            {/* <ProgramTypeProvider for={ProgramColumns} />
-            <ScheduleTypeProvider for={ScheduleColumns} /> */}
+            <ScheduleTypeProvider for={ScheduleColumns} />
+            <ListTypeProvider for={ListColumns} />
         </Plugin>
     );  
 };
 
 export default DataTypeProviders
+  
+// function ProgramEditor({ value, onValueChange }){
+//     const auth = useAuth();
+//     return (
+//         <Select
+//             input={<Input />}
+//             multiple
+//             value={value?value:[]}
+//             onChange={event => {onValueChange(event.target.value)}}
+//             style={{ width: '100%' }}
+//         >
+//             {auth.programList.map(program => <MenuItem value={program}>{program}</MenuItem>)}
+//         </Select>
+//     );
+//   };

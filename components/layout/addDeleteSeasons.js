@@ -87,7 +87,7 @@ export function AddSeason({addOpen, setAddOpen}){
         tempSeasonObject[seasonName] = seasonName;
         firebase.database().ref('Seasons').update(tempSeasonObject);
         if(blankSeason){
-            firebase.database().ref(seasonName).update({Instructors: null, Schools:null, Programs:null});
+            firebase.database().ref(seasonName).update({'Instructors': {'temp':{'name':'temp'}}, 'Schools':{'temp':{'name':'temp'}}, 'Programs':{'unassigned_instructors':0}});
         }else{
             firebase.database().ref(exportSeason).once('value').then(
                 (Snapshot)=>{
@@ -97,6 +97,8 @@ export function AddSeason({addOpen, setAddOpen}){
                 }
             );
         }
+        setSeasonName('');
+        setError('');
         mutate(['Seasons',true],newSeasonList,false);
         router.push('/');
         return null;
@@ -105,6 +107,8 @@ export function AddSeason({addOpen, setAddOpen}){
         setSeasonName(value);
         if(seasonList.includes(value)){
             setError('Season name already exists.');
+        }else if(value === 'Seasons'){
+            setError('Cannot name season \"Seasons\"');
         }else{
             setError(false);
         }
@@ -125,7 +129,7 @@ export function AddSeason({addOpen, setAddOpen}){
                         className={classes.formControl} variant="outlined" margin="normal" fullWidth autoFocus
                         value={seasonName}
                         onChange={(event)=>handleTextChange(event.target.value)}
-                        error={error}
+                        error={error?true:false}
                         helperText={error}
                     />
                     <FormControlLabel

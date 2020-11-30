@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -14,9 +14,7 @@ import {useRouter} from 'next/router';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { useAlreadyAuth } from "../lib/useAuth";
-import { useAuth } from "../lib/useAuth";
-import Backdrop from '@material-ui/core/Backdrop';
-import CircularProgress from '@material-ui/core/CircularProgress';
+
 import Loading from '../components/loading';
 
 const useStyles = makeStyles((theme) => ({
@@ -47,6 +45,7 @@ export default function Login() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -67,16 +66,21 @@ export default function Login() {
   };
 
   const onSignIn = () => {
-    auth.signin(email, password).then(function(user){
-      if(user){
-        router.push('/');
-      }
-    }
-    ).catch(function(error) {
-      var errorMessage = error.message;
-      setErrorMsg(errorMessage);
-      setError(true);
-    });
+    auth
+      .signin(email, password, rememberMe)
+      .then(
+        function(user){
+          if(user){
+            router.push('/');
+          }
+        }
+      ).catch(
+        function(error) {
+          var errorMessage = error.message;
+          setErrorMsg(errorMessage);
+          setError(true);
+        }
+      );
   };
 
   
@@ -121,7 +125,13 @@ export default function Login() {
             helperText={errorMsg}
           />
           <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
+            control={
+              <Checkbox 
+                checked={rememberMe}
+                onChange={()=>setRememberMe(!rememberMe)}
+                value="remember" 
+                color="primary" 
+              />}
             label="Remember me"
           />
           <Button

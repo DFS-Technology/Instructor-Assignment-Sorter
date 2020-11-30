@@ -11,6 +11,7 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import theme from '../styles/theme';
 // fixes a bug.
 import '../styles/new.css'
+import '../styles/globals.css'
 
 export default function MyApp({ Component, pageProps }) {
   
@@ -29,10 +30,9 @@ export default function MyApp({ Component, pageProps }) {
       <Head>
         <title>Instructor Assignment Sorter</title>
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
+        <link rel="preconnect" href="https://fonts.gstatic.com"/>
+        <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;350;400;450;500;550;600;650&display=swap" rel="stylesheet"/>
         <link rel="icon" href="/dfslogo.svg" />
-        <style>
-            @import url('https://fonts.googleapis.com/css2?family=Rubik&display=swap');
-        </style>
       </Head>
       
       <ThemeProvider theme={theme}>
