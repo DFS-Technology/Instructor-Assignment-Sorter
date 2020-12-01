@@ -29,7 +29,7 @@ import { AirlineSeatFlatOutlined, SentimentSatisfiedAlt } from '@material-ui/ico
 
 export default function AddProgram({open, setOpen, programData}){
     const classes = useStyles();
-    const router = useRouter();
+
     const {currentSeason} = useAuth(); 
     const [programName, setProgramName] = useState('');
     const [programColor, setProgramColor] = useState('#ffffff');
@@ -116,13 +116,13 @@ export default function AddProgram({open, setOpen, programData}){
             </DialogContent>
             <DialogActions>
                 <Button
+                    children={'Cancel'} 
+                    onClick={()=>setOpen(false)} color="primary"
+                />
+                <Button
                     children={'Create'}
                     disabled={(error!='') || (programName==='') || (imgError!='') || (programLogo==='')} 
                     onClick={()=>handleAdd()} variant="contained" color="primary"
-                />
-                <Button
-                    children={'Cancel'} 
-                    onClick={()=>setOpen(false)} color="primary"
                 />
             </DialogActions>
         </Dialog>

@@ -1,3 +1,4 @@
+//https://devexpress.github.io/devextreme-reactive/react/grid/docs/guides/getting-started/
 import Chip from '@material-ui/core/Chip';
 import Input from '@material-ui/core/Input';
 import Select from '@material-ui/core/Select';
@@ -37,6 +38,8 @@ import Loading from '../loading';
 import { CSVLink } from "react-csv";
 import GetAppIcon from '@material-ui/icons/GetApp';
 import Tooltip from '@material-ui/core/Tooltip';
+
+// import {AddEntry} from './popUpEditor';
 
 const instructorExportColumns = [
   { key: 'name', label: 'Name'},
@@ -91,38 +94,9 @@ import { selectedRowsCountSelector } from '@material-ui/data-grid';
 
 
 
-const TableEditCommand = ({id, text, ...restProps}) => (
-  <TableEditColumn.Command
-    id={id}
-    text={id === 'add' ? (
-      <Tooltip title="New" placement="top">
-      <AddIcon />
-      </Tooltip>
-    ): id === 'edit' ? (
-      <Tooltip title="Edit">
-      <EditIcon />
-      </Tooltip>
-      
-    ):id === 'delete' ? (
-      <Tooltip title="Delete">
-      <DeleteIcon />
-      </Tooltip>
-      
-    ):id === 'commit' ? (
-      <Tooltip title="Save">
-      <CheckIcon />
-      </Tooltip>
-      
-    ):id === 'cancel' ? (
-      <Tooltip title="Cancel">
-      <ClearIcon />
-      </Tooltip>
-      
-    ):null}
-    {...restProps}
-  >
-  </TableEditColumn.Command>
-);
+const TableEditCommand = ({...restProps}) => {
+  return null;
+};
 
 
 
@@ -137,6 +111,19 @@ const useStyles = makeStyles((theme) => ({
   label:{
     fontSize: '0.875rem',
   },
+  fontSizeLarge:{
+    fontWeight: 500,
+    fontSize: '1.8rem',
+    margin:'0px',
+  },
+  addIcon:{
+    fontWeight: 600,
+    fontSize: '2.3rem',
+  },
+  addIconSmall:{
+    fontWeight: 500,
+    fontSize: '1.8rem',
+  }
 }));
 export default function Table({
   table_type, 
@@ -146,6 +133,11 @@ export default function Table({
   console.log("2. "+table_type+" Component");
   const classes = useStyles();
   const auth = useAuth();
+  const [addOpen, setAddOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [editedRow, setEditedRow] = useState(false);
+  const [deletedRow, setDeletedRow] = useState(false);
 
   const [columns] = useState((table_type === 'Instructors' )? instructorColumns : schoolColumns);
   const [BooleanColumns] = useState((table_type === 'Instructors' )? ['car','returning_instructor'] : ['program_time_flexibility','is_virtual']);
@@ -166,6 +158,7 @@ export default function Table({
   [
     { columnName: 'schedule', wordWrapEnabled: true },
     { columnName: 'special_language_request', wordWrapEnabled: true },
+    { columnName: 'number_of_instructors', align: 'center'},
   ]);
 
   const [pageSizes] = useState([5, 10, 25, 50, 0]);
@@ -186,7 +179,7 @@ export default function Table({
     <TableHeaderRow.Cell
       {...restProps}
       style={{textAlign:'center', padding:dense?'1vh':null}}
-
+    
     />
   );
   const ToolbarRoot = ({children, ...restProps}) => (
@@ -213,7 +206,53 @@ export default function Table({
       </div>
     </Toolbar.Root>
   );
-  
+  const TableEditColumnCell = ({tableRow, children, ...restProps}) =>(
+    <TableEditColumn.Cell 
+      {...restProps}
+      style={{padding:'0', textAlign:'center'}}
+    >
+      <Tooltip title="Delete">
+        <IconButton style={{padding:dense?'11px':'14px'}} onClick={()=>{
+          setDeletedRow(()=>tableRow.rowId); 
+          setDeleteOpen(()=>true);
+        }}>
+          <DeleteIcon 
+            color='primary' 
+            fontSize={dense?'medium':'large'}
+            classes={{fontSizeLarge: classes.fontSizeLarge}}
+          />
+        </IconButton>
+      </Tooltip>
+      <Tooltip title="Edit">
+        <IconButton style={{padding:dense?'11px':'14px'}} onClick={()=>{
+          setEditedRow(()=>tableRow.row); 
+          setEditOpen(()=>true);
+        }}>
+          <EditIcon 
+            color='primary' 
+            fontSize={dense?'medium':'large'}
+            classes={{fontSizeLarge: classes.fontSizeLarge}}
+          />
+        </IconButton>
+      </Tooltip>
+    </TableEditColumn.Cell>
+  );
+  const TableEditColumnHeaderCell = ({children, ...restProps}) => (
+    <TableEditColumn.HeaderCell 
+      {...restProps}
+      style={{padding:'0px 1.5vw'}}
+    >
+      <Tooltip title="New" placement="top">
+      <IconButton style={{padding:'1vh'}} onClick={()=>setAddOpen(true)}>
+        <AddIcon 
+          classes={{fontSizeLarge: classes.addIcon, fontSizeInherit:classes.addIconSmall}}
+          color='primary' 
+          fontSize={dense?'inherit':'large'}
+        />
+      </IconButton>
+      </Tooltip>
+    </TableEditColumn.HeaderCell>
+  );
   const PagingPanelContainer = ({ ...restProps})=>(<>
     <div style={{display:'grid', gridTemplateColumns:'30% auto'}}>
     <FormControlLabel
@@ -338,7 +377,13 @@ export default function Table({
     mutate([table_type,auth.currentSeason],changedRows,false);
     // mutate([table_type,auth.currentSeason],changedRows,true);
   };
-  return (
+  return (<>
+    {/* <AddEntry 
+      open={addOpen} 
+      setOpen={setAddOpen} 
+      table_type={table_type}
+      
+    /> */}
     <Paper elevation={3} style={{borderRadius: '1.3vh', display: 'flex',margin: '2vh 2vh 2vh 2vh', height: '96%', height: '-webkit-calc(96% - 64px)', height: '-moz-calc(96% - 64px)',height: 'calc(96% - 64px)',}}>
       <Grid
         rows={rows}
@@ -403,8 +448,10 @@ export default function Table({
           showAddCommand
           showEditCommand
           showDeleteCommand
-          width={'auto'}
+          width={dense?'120':'130'}
           commandComponent = {TableEditCommand}
+          cellComponent = {TableEditColumnCell}
+          headerCellComponent = {TableEditColumnHeaderCell}
         />
         {filterToggle == 1 ? <TableFilterRow/> :
          filterToggle == 2 ? <TableFilterRow showFilterSelector/> : 
@@ -412,5 +459,5 @@ export default function Table({
       </Grid>
     </Paper>
 
-  );
+  </>);
 };
