@@ -5,20 +5,11 @@ import MenuItem from '@material-ui/core/MenuItem';
 import {Plugin} from '@devexpress/dx-react-core';
 import { DataTypeProvider } from '@devexpress/dx-react-grid';
 
-import {useAuth} from '../../lib/useAuth';
-import { stringNumberComparer } from '@material-ui/data-grid';
 
 
 
 const ShirtFormatter = ({ value }) => <Chip label={value} />;
 const BooleanFormatter = ({ value }) => <Chip label={value ? 'Yes' : 'No'} style={{backgroundColor:value?'#F9DEA6':null}} />;
-// const ProgramsFormatter = ({ value }) => {
-//     const Chips = {};
-//     for(const program in value){
-        
-//     }
-//     return <><Chip label={value ? 'Yes' : 'No'} /></>
-// };
 
 
 function ShirtEditor({ value, onValueChange }){
@@ -94,7 +85,7 @@ const dayVal = {
     'Fri':4,
 };
 const numList = [1,2,3,4,5];
-const dayColor = numList.map((item) => 'hsl(41,81%,'+String(63*(1+(item-3)*0.17))+'%)');
+const dayColor = numList.map((item) => 'hsl(41,81%,'+String(63*(1+(item-3)*0.175))+'%)');
 
 
 
@@ -160,18 +151,3 @@ function DataTypeProviders({BooleanColumns, ShirtColumns, ScheduleColumns,ListCo
 };
 
 export default DataTypeProviders
-  
-// function ProgramEditor({ value, onValueChange }){
-//     const auth = useAuth();
-//     return (
-//         <Select
-//             input={<Input />}
-//             multiple
-//             value={value?value:[]}
-//             onChange={event => {onValueChange(event.target.value)}}
-//             style={{ width: '100%' }}
-//         >
-//             {auth.programList.map(program => <MenuItem value={program}>{program}</MenuItem>)}
-//         </Select>
-//     );
-//   };

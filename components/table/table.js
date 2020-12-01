@@ -2,6 +2,9 @@ import Chip from '@material-ui/core/Chip';
 import Input from '@material-ui/core/Input';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
 import {Plugin} from '@devexpress/dx-react-core';
 import { DataTypeProvider } from '@devexpress/dx-react-grid';
 import { makeStyles } from '@material-ui/core/styles';
@@ -36,19 +39,19 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import Tooltip from '@material-ui/core/Tooltip';
 
 const instructorExportColumns = [
-    { key: 'name', label: 'Name'},
-    { key: 'gender', label: 'Gender'},
-    { key: 'schoolYear', label: 'School Year'},
-    { key: 'major', label: 'Major'},
-    { key: 'university', label: 'University'},
-    { key: 'region', label: 'Region'},
-    { key: 'startingLocation', label: 'Address'},
-    { key: 'car', label: 'Car 🚗', description:'Weather they have a car or not'},
-    { key: 'returner', label: 'Returning'},
-    { key: 'shirtSize', label: 'Shirt Size 👕'},
-    { key: 'programs', label: 'Programs'},
-    { key: 'languages', label: 'Languages'},
-  ];
+  { key: 'name', label: 'Name'},
+  { key: 'gender', label: 'Gender'},
+  { key: 'schoolYear', label: 'School Year'},
+  { key: 'major', label: 'Major'},
+  { key: 'university', label: 'University'},
+  { key: 'region', label: 'Region'},
+  { key: 'startingLocation', label: 'Address'},
+  { key: 'car', label: 'Car 🚗', description:'Weather they have a car or not'},
+  { key: 'returner', label: 'Returning'},
+  { key: 'shirtSize', label: 'Shirt Size 👕'},
+  { key: 'programs', label: 'Programs'},
+  { key: 'languages', label: 'Languages'},
+];
 
 
 import {
@@ -84,15 +87,11 @@ import {
 
   TableFilterRow, 
 } from '@devexpress/dx-react-grid-material-ui';
+import { selectedRowsCountSelector } from '@material-ui/data-grid';
 
-const styles = theme =>({
-  button:{
-    margin: theme.spacing(0, 1),
-  },
-  
-});
 
-const TableEditCommandBase = ({id, text, ...restProps}) => (
+
+const TableEditCommand = ({id, text, ...restProps}) => (
   <TableEditColumn.Command
     id={id}
     text={id === 'add' ? (
@@ -125,16 +124,18 @@ const TableEditCommandBase = ({id, text, ...restProps}) => (
   </TableEditColumn.Command>
 );
 
-export const TableEditCommand = withStyles(styles, { name: 'TableEditCommand' })(TableEditCommandBase);
 
 
-const getRowId = row => row.id;
+
 
 
 const Root = props => <Grid.Root {...props} style={{ display: 'flex', height: '100%' , width: '100%'}} />;
 const useStyles = makeStyles((theme) => ({
   chip:{
     margin: '1.5px',
+  },
+  label:{
+    fontSize: '0.875rem',
   },
 }));
 export default function Table({
@@ -169,6 +170,78 @@ export default function Table({
 
   const [pageSizes] = useState([5, 10, 25, 50, 0]);
   const [filterToggle, setFilterToggle] = useState(0);
+  const [dense, setDense] = useState(false);
+  const TableRow = ({ ...restProps}) => (
+    <VirtualTable.Row
+      {...restProps}
+    />
+  );
+  const TableCell = ({...restProps}) => (
+    <VirtualTable.Cell
+      {...restProps}
+      style={{padding:dense?'0.25vh':null}}
+    />
+  );
+  const TableHeaderCell = ({...restProps}) => (
+    <TableHeaderRow.Cell
+      {...restProps}
+      style={{textAlign:'center', padding:dense?'1vh':null}}
+
+    />
+  );
+  const ToolbarRoot = ({children, ...restProps}) => (
+    <Toolbar.Root {...restProps} style={{minHeight:dense?"0px":null}}>
+      <div style={{display: 'flex', justifyContent: 'space-between', width:'100%'}}>
+      <div style={{display: 'flex'}}>
+      <CSVLink data={rows} headers={instructorExportColumns}>
+      <Tooltip title="Export to CSV">
+        <IconButton >
+          <GetAppIcon/>
+        </IconButton>
+      </Tooltip>
+      
+      </CSVLink>
+      </div>
+      <div style={{display: 'flex'}}>
+      {children}
+      <Tooltip title={"Filter "+filterToggle+"/2"}>
+      <IconButton onClick={() => setFilterToggle((filterToggle+1)%3)}>
+        <FilterListIcon />
+      </IconButton>
+      </Tooltip>
+      </div>
+      </div>
+    </Toolbar.Root>
+  );
+  
+  const PagingPanelContainer = ({ ...restProps})=>(<>
+    <div style={{display:'grid', gridTemplateColumns:'30% auto'}}>
+    <FormControlLabel
+      component='div'
+      control={
+        <Switch 
+          color='primary'
+          checked={dense}
+          onChange={()=>setDense(!dense)}
+          name="DenseSwitch"
+          size='small'
+        />
+      }
+      label="Dense Padding"
+      classes={{label:classes.label}}
+      style={{ 
+        gridColumn:'1 / span 1', justifySelf:'start', alignSelf:'center',
+        margin:'1vh 1vw',
+      }}
+    />
+    <PagingPanel.Container 
+      {...restProps}
+      style={{gridColumn:'2 / span 1', justifySelf:'end', padding:dense?'0px':null}}
+    />
+    
+      
+    </div>
+  </>);
 
   const InstructorProgramFormatter = ({row:{id}, value}) => {
     if(!value || !Object.keys(value).length){
@@ -238,33 +311,6 @@ export default function Table({
     return (<h1>ERROR. Check console logs</h1>);
   }
 
-
-
-  const ToolbarRootBase = ({children}) => (
-    <Toolbar.Root>
-      <div style={{display: 'flex', justifyContent: 'space-between', width:'100%'}}>
-      <div style={{display: 'flex'}}>
-      <CSVLink data={rows} headers={instructorExportColumns}>
-      <Tooltip title="Export to CSV">
-        <IconButton >
-          <GetAppIcon/>
-        </IconButton>
-      </Tooltip>
-      
-      </CSVLink>
-      </div>
-      <div style={{display: 'flex'}}>
-      {children}
-      <Tooltip title={"Filter "+filterToggle+"/2"}>
-      <IconButton onClick={() => setFilterToggle((filterToggle+1)%3)}>
-        <FilterListIcon />
-      </IconButton>
-      </Tooltip>
-      </div>
-      </div>
-    </Toolbar.Root>
-  );
-  const ToolbarRoot = withStyles(styles, { name: 'ToolbarRoot' })(ToolbarRootBase);
   const commitChanges = ({ added, changed, deleted }) => {
     return null;
     let changedRows;
@@ -297,7 +343,7 @@ export default function Table({
       <Grid
         rows={rows}
         columns={columns}
-        getRowId={getRowId}
+        getRowId={(row) => row.id}
         rootComponent={Root}
       >
         
@@ -330,6 +376,8 @@ export default function Table({
           height='100%'
           width='100%'
           columnExtensions={tableColumnExtensions}
+          rowComponent={TableRow}
+          cellComponent={TableCell}
         />
         
         <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
@@ -337,13 +385,16 @@ export default function Table({
           defaultOrder={defaultColumnOrder}
         />
         <TableHeaderRow 
-          showSortingControls 
+          showSortingControls
+          cellComponent={TableHeaderCell} 
         />
         <TableColumnVisibility
           defaultHiddenColumnNames={defaultHiddenColumnNames}
         />
         <PagingPanel
           pageSizes={pageSizes}
+          containerComponent={PagingPanelContainer}
+          
         />
         <Toolbar rootComponent={ToolbarRoot}/>
         <ColumnChooser messages={{showColumnChooser:"Hide Columns"}}/>
@@ -352,6 +403,7 @@ export default function Table({
           showAddCommand
           showEditCommand
           showDeleteCommand
+          width={'auto'}
           commandComponent = {TableEditCommand}
         />
         {filterToggle == 1 ? <TableFilterRow/> :
