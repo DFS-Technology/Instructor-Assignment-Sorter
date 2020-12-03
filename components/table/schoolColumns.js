@@ -5,7 +5,7 @@ export const schoolColumns = [
   { name: 'programs', title: 'Programs', getCellValue: row=> {return row.programs?Object.keys(row.programs):[]}},
   { name: 'schedule', title: 'Schedule', getCellValue: row=> {return row.programs?row.programs[Object.keys(row.programs)[0]]:{}}},
   { name: 'number_of_instructors', title: 'Num. Inst.'},
-  { name: 'special_language_request', title: 'Language Requests'},
+  { name: 'special_language_request', title: 'Language Requests', getCellValue: row=> {return row.programs?row.programs[Object.keys(row.programs)[0]]['number_of_instructors']:{}}},
   { name: 'is_virtual', title: 'Virtual'},
   { name: 'location_preferences', title: 'Location Preference'},
   { name: 'program_time_flexibility', title: 'Flexible Schedule'},

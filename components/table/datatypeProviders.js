@@ -95,6 +95,9 @@ const ScheduleFormatter = ({row: {id}, value}) => {
     }
     const schedule = [];
     for (const day in  value){
+        if (!(day in scheduleVal)){
+            continue;
+        }
         for(const timeSlot of value[day]){
             const chipText = scheduleText[day]+' '+timeSlot['start']+'-'+timeSlot['end'];
             schedule.push([chipText, dayColor[scheduleVal[day]]]);

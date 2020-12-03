@@ -2,14 +2,18 @@ var firebase = require('firebase/app');
 
 const getSchedule = (day) =>{
   if (Math.ceil(Math.random()*5) > 2 ){
-    const start_hour = (Math.floor(Math.random()*8)+8);
-    const start_min = (Math.floor(Math.random()*4)*15);
-    const period_length = (Math.ceil(Math.random()*4));
-    const retObject = [];
-    const start_min
+    var start_hour = (Math.floor(Math.random()*8)+8);
+    var period_length = (Math.ceil(Math.random()*4));
+    var end_hour = start_hour + period_length;
+    start_hour = start_hour<10?'0'+start_hour.toString():start_hour.toString();
+    end_hour = end_hour<10?'0'+end_hour.toString():end_hour.toString();
+    var start_min = (Math.floor(Math.random()*4)*15);
+    start_min = start_min?start_min.toString():'00';
+    
+    var retObject = [];
     retObject.push({
-      'start': (start_hour<10?'0':'') + start_hour.toString()+':'+start_min?start_min.toString():'00', 
-      'end':  ((start_hour+period_length)<10?'0':'') + (start_hour+period_length).toString()+':'+start_min?start_min.toString():'00',
+      'start':  start_hour + ':' + start_min,
+      'end':  start_hour + ':' + start_min,
     })
     return retObject; 
   }else{
@@ -88,9 +92,6 @@ var schools = {
   }},
   region : {values: [['Irvine'], ['Los Angeles'], ['Orang County']]},
   address : {faker: 'address.streetAddress', locale: 'en_US'},
-  number_of_instructors : {function: function(){
-    return Math.ceil(Math.random()*5+1);
-  }},
   programs: { function: function(){
     const returnObject = {};
     const programsList = ['AppJam','WebJam','Scratch','LESTEM'];
@@ -122,6 +123,7 @@ var schools = {
         returnObject['Friday'] = Fri;
       }
     }
+    returnObject['number_of_instructors'] = Math.ceil(Math.random()*5+1);
     const ret = {};
     ret[singleProgram] = returnObject;
     return ret;
@@ -229,7 +231,7 @@ initFirebase();
 var db = require('firebase/database');;
 const db1 = firebase.database();
 var ret = [];
-var oldRef = db1.ref('/Winter 2021/instructors');
+var oldRef = db1.ref('/Fall 2020/instructors');
 
 data['instructors'].forEach(item => {
     var newRef = oldRef.push();
@@ -238,7 +240,7 @@ data['instructors'].forEach(item => {
 });
 
 data['schools'].forEach(item => {
-  var newRef = db1.ref('/Winter 2021/schools/'+item.id.toString())
+  var newRef = db1.ref('/Fall 2020/schools/'+item.id.toString())
   console.log(item.id);
   delete item['id'];
   newRef.set(item).catch((e)=>console.log("Error Found: +++++++++++++++++++++++++",e));
