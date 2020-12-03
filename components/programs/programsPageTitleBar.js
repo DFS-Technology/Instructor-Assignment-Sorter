@@ -39,11 +39,11 @@ export default function ProgramsPageTitleBar({
             </div>
             <div  style={{margin:'1vh', gridColumn:'2/span 1', justifySelf:'center'}}>
                 {sortPageToggle? 
-                    <Button size='large' variant="contained" color="secondary" style={{fontSize:15,  borderRadius:'20px'}}>
+                    <Button size='large' variant="contained" color="secondary" style={{color:'white',textShadow:'0 0 5px #000000', fontSize:15,  borderRadius:'20px'}}>
                         Re-Sort
                     </Button>
                     :
-                    <Button  onClick={()=>{setLoading(true);newSortHandler();}} size='large' variant="contained" style={{textTransform: 'none',fontSize:15, backgroundColor:"#4caf50", borderRadius:'20px'}}>
+                    <Button  onClick={()=>{setLoading(true);newSortHandler();}} size='large' variant="contained" style={{color:'white',textShadow:'0 0 5px #000000',textTransform: 'none',fontSize:15, backgroundColor:"#4caf50", borderRadius:'20px'}}>
                         New SORT
                     </Button>
                 }
@@ -54,7 +54,7 @@ export default function ProgramsPageTitleBar({
                         id='tableViewForm'
                         control={
                             <Switch
-                                checked={tableViewSwitch}
+                                checked={true/*tableViewSwitch*/}
                                 onChange={() => {setTableViewSwitch(!tableViewSwitch)}}
                                 name="tableViewSwitch"
                                 color="primary"

@@ -5,6 +5,7 @@
 
   import ProgramCards from './programCards';
   import SortPage from '../sortingPagesComponents/programs';
+  import TableView from './tableView';
 
   import { useAuth } from "../../lib/useAuth.js";
   import { mutate } from 'swr';
@@ -23,8 +24,10 @@
 
     const {currentSeason} = useAuth();  
     const [sortPageToggle, setSortPageToggle] = useState(false);
-    const [tableViewSwitch, setTableViewSwitch] = useState(false);
-    const [rawSchoolData, setRawSchoolData] = useState(false);
+    const [tableViewSwitch, setTableViewSwitch] = useState(true);
+    const [sortData, setSortData] = useState([]);
+    const [instructorDict, setInstructorDict] = useState({});
+    const [schoolDict, setSchoolDict] = useState({});
     const [loading, setLoading] = useState(false);
     
     const handleProgramChange = ({oldProgramName, newProgramName, deleting})=>{
@@ -72,28 +75,32 @@
           .then(response => response.json())
           .catch(error => console.log('Error Fetching Sort api',error));
       console.log(matchObject);
-      const instructorDict = {};
+      instructorDict = {};
       const unassignedInstructors = {};
       for(const instructor of instructorRows){
         instructorDict[instructor['id']] = instructor;
         unassignedInstructors[instructor['id']] = 0;
       }
-      const schoolDict = {};
+      schoolDict = {};
       for(const school of schoolRows){
         schoolDict[school['id']] = school;
       }
       
-
-
-
+      sortData = [];
       for(const program in matchObject){
         const assignedSchools = {};
         var assignedInstructors = 0;
         for(const schoolID in matchObject[program]){
           assignedSchools[schoolID] = {};
           for(const instructorID in matchObject[program][schoolID]){
-            assignedSchools[schoolID][instructorID] = instructorDict[instructorID];
-            assignedSchools[schoolID][instructorID]['schedule'] = matchObject[program][schoolID][instructorID];
+            assignedSchools[schoolID][instructorID] = matchObject[program][schoolID][instructorID];
+            const newSortEntry = {};
+            newSortEntry['id'] = sortData.length;
+            newSortEntry['instructor'] = instructorID;
+            newSortEntry['school'] = schoolID;
+            newSortEntry['program'] = program;
+            newSortEntry['schedule'] = matchObject[program][schoolID][instructorID];
+            sortData.push(newSortEntry);
             if(instructorID in unassignedInstructors){
               assignedInstructors += 1;
               delete unassignedInstructor[instructorID];
@@ -105,8 +112,11 @@
       }
       programData['unassigned_instructors'] = Object.keys(unassignedInstructors).length;
       mutate(['Programs', currentSeason], programData, false);
-      setLoading(false);
-      setRawSchoolData(schoolDict);
+      setSortData(()=>sortData);
+      setInstructorDict(()=>instructorDict);
+      schoolDict(()=>schoolDict);
+      setSortPageToggle(()=>true);
+      setLoading(()=>false);
   };
   
 
@@ -136,10 +146,18 @@
           setLoading={setLoading}
         />
         {sortPageToggle?  
-          <SortPage  
-            programData={programData} 
-            rawSchoolData={rawSchoolData}
-          />
+          tableViewSwitch?
+            <TableView 
+              programData={programData} 
+              sortData={sortData}
+              instructorDict={instructorDict}
+              schoolDict={schoolDict}
+            />
+            :
+            <SortPage  
+              programData={programData} 
+              sortData={sortData}
+            />
           :
           <ProgramCards 
             programData={programData} 
