@@ -16,7 +16,7 @@ export const schoolDefaultColumnWidths = [
     { columnName: 'name', width: 270 },
     { columnName: 'address', width: 200 },
     { columnName: 'programs', width: 110 },
-    { columnName: 'schedule', width: 275 },
+    { columnName: 'schedule', width: 290 },
     { columnName: 'number_of_instructors', width: 111 },
     { columnName: 'special_language_request', width: 180 },
     { columnName: 'is_virtual', width: 100 },

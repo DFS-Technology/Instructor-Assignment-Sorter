@@ -11,6 +11,8 @@
   import { mutate } from 'swr';
 
 
+  import firebase from 'firebase/app'
+  import 'firebase/database';
   import Loading from '../loading';
   import { formatMs } from '@material-ui/core';
 
@@ -72,49 +74,61 @@
       const matchObject = await fetch(
               'https://apurva29.pythonanywhere.com/sort',
               request)
-          .then(response => response.json())
+          .then(response => {console.log('Response Recieved');return response.json()})
           .catch(error => console.log('Error Fetching Sort api',error));
       console.log(matchObject);
-      instructorDict = {};
+      
+      const newInstructorDict = {};
       const unassignedInstructors = {};
       for(const instructor of instructorRows){
-        instructorDict[instructor['id']] = instructor;
+        newInstructorDict[instructor['id']] = instructor;
         unassignedInstructors[instructor['id']] = 0;
       }
-      schoolDict = {};
+      const newSchoolDict = {};
+      const neededInstructors = {};
+      for(const program in programData){
+        neededInstructors[program] = 0;
+      }
       for(const school of schoolRows){
-        schoolDict[school['id']] = school;
+        newSchoolDict[school['id']] = school;
+        for(const program in school['programs']){
+          neededInstructors[program]+=school['programs'][program]['number_of_instructors'];
+        }
       }
       
-      sortData = [];
+      var newSortData = [];
       for(const program in matchObject){
-        const assignedSchools = {};
+        var assignedSchools = {};
         var assignedInstructors = 0;
         for(const schoolID in matchObject[program]){
           assignedSchools[schoolID] = {};
+
+
           for(const instructorID in matchObject[program][schoolID]){
             assignedSchools[schoolID][instructorID] = matchObject[program][schoolID][instructorID];
-            const newSortEntry = {};
-            newSortEntry['id'] = sortData.length;
+            var newSortEntry = {};
+            newSortEntry['id'] = newSortData.length;
             newSortEntry['instructor'] = instructorID;
             newSortEntry['school'] = schoolID;
             newSortEntry['program'] = program;
             newSortEntry['schedule'] = matchObject[program][schoolID][instructorID];
-            sortData.push(newSortEntry);
+            newSortData.push(newSortEntry);
             if(instructorID in unassignedInstructors){
               assignedInstructors += 1;
-              delete unassignedInstructor[instructorID];
+              delete unassignedInstructors[instructorID];
             }
           }
         }
         programData[program]['assigned_schools'] = assignedSchools;
         programData[program]['assigned_instructors'] = assignedInstructors;
+        programData[program]['needed_instructors'] = neededInstructors[program];
       }
       programData['unassigned_instructors'] = Object.keys(unassignedInstructors).length;
+      //firebase.
       mutate(['Programs', currentSeason], programData, false);
-      setSortData(()=>sortData);
-      setInstructorDict(()=>instructorDict);
-      schoolDict(()=>schoolDict);
+      setSortData(()=>newSortData);
+      setInstructorDict(()=>newInstructorDict);
+      setSchoolDict(()=>newSchoolDict);
       setSortPageToggle(()=>true);
       setLoading(()=>false);
   };
@@ -135,6 +149,7 @@
         direction="column"
         justify="center"
         alignItems="center"
+        style={{display:'block', height: '100%', height: '-webkit-calc(100% - 64px)', height: '-moz-calc(100% - 64px)',height: 'calc(100% - 64px)',}}
       >
         <ProgramsPageTitleBar 
           sortPageToggle={sortPageToggle} 
@@ -149,7 +164,7 @@
           tableViewSwitch?
             <TableView 
               programData={programData} 
-              sortData={sortData}
+              rows={sortData}
               instructorDict={instructorDict}
               schoolDict={schoolDict}
             />

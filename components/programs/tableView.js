@@ -15,10 +15,8 @@ import Paper from '@material-ui/core/Paper';
 
 import { withStyles } from '@material-ui/core/styles';
 
-import DataTypeProviders from './datatypeProviders';
+import DataTypeProviders, {ScheduleFormatter} from '../table/datatypeProviders';
 
-import {instructorColumns, instructorDefaultColumnWidths, instructorDefaultColumnOrder} from './instructorColumns';
-import {schoolColumns, schoolDefaultColumnWidths,schoolDefaultColumnOrder} from './schoolColumns';
 
 import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
@@ -36,6 +34,7 @@ import {mutate} from 'swr';
 import Loading from '../loading';
 
 import Tooltip from '@material-ui/core/Tooltip';
+import GetAppIcon from '@material-ui/icons/GetApp';
 
 import {
   EditingState,
@@ -48,6 +47,9 @@ import {
 
   FilteringState,
   IntegratedFiltering,
+
+  GroupingState,
+  IntegratedGrouping,
 } from '@devexpress/dx-react-grid';
 import {
   Grid,
@@ -68,7 +70,9 @@ import {
 
   PagingPanel,
 
-  TableFilterRow, 
+  TableFilterRow,
+  
+  TableGroupRow,
 } from '@devexpress/dx-react-grid-material-ui';
 import { selectedRowsCountSelector } from '@material-ui/data-grid';
 
@@ -79,29 +83,43 @@ const TableEditCommand = ({...restProps}) => {
 };
 
 
-const programColumns = [
-    { name: 'name', title: 'Name'},
-    { name: 'schedule', title: 'Assigned Schedule'},
-    { name: 'school', title: 'School'},
-    { name: 'program', title: 'Program'},
-    // { name: 'gender', title: 'Gender'},
-    // { name: 'year_of_instruction', title: 'School Year'},
-    // { name: 'major', title: 'Major'},
-    // { name: 'university', title: 'University'},
-    // { name: 'region', title: 'Region'},
-    // { name: 'address', title: 'Address'},
-    // { name: 'car', title: 'Car 🚗', description:'Weather they have a car or not'},
-    // { name: 'returning_instructor', title: 'Returning'},
-    // { name: 'shirt_size', title: 'Shirt Size 👕'},
-    // { name: 'programs', title: 'Programs'},
-    // { name: 'languages_spoken', title: 'Languages'},
-    // { name: 'schedule', title: 'Schedule'},
-    // { name: 'city', title: 'City'},
-    // { name: 'phone_number', title: 'Phone Number'},
-  
-  
-  ];
 
+const programDefaultColumnWidths = [
+  { columnName: 'name', width: 165 },
+  { columnName: 'schedule', width: 290},
+  // { columnName: 'gender', width: 90 },
+  // { columnName: 'year_of_instruction', width: 130 },
+  // { columnName: 'major', width: 80 },
+  // { columnName: 'university', width: 110 },
+  // { columnName: 'region', width: 135 },
+  // { columnName: 'address', width: 185 },
+  { columnName: 'car', width: 100 },
+  { columnName: 'returning_instructor', width: 110 },
+  // { columnName: 'shirt_size', width: 130 },
+  { columnName: 'programs', width: 250 },
+  // { columnName: 'languages_spoken', width: 180 },
+  
+  // { columnName: 'city', width: 100},
+  // { columnName: 'phone_number', width: 100},
+
+];
+const programDefaultColumnOrder = [
+  'name',
+  // 'programs',
+  'schedule',
+  // 'region',
+  // 'car',
+  // 'major',
+  // 'returning_instructor',
+  // 'year_of_instruction',
+  // 'university',
+  // 'languages_spoken',
+  // 'address',
+  // 'shirt_size',
+  // 'gender',
+  // 'city',
+  // 'phone_number',
+];
 
 
 const Root = props => <Grid.Root {...props} style={{ display: 'flex', height: '100%' , width: '100%'}} />;
@@ -127,61 +145,139 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 export default function TableView({
-  sortData,
+  rows,
   programData,
   instructorDict,
   schoolDict,
 }){
+  const programColumns = [
+    { name: 'editing', title: '', getCellValue: ()=>''},
+    { name: 'name', title: 'Name', getCellValue: row=>{
+      return instructorDict[row.instructor]? instructorDict[row.instructor]['name']:''
+    }},
+    { name: 'schedule', title: 'Assigned Schedule'},
+    { name: 'car', title: 'Car', getCellValue: row=>{
+      return instructorDict[row.instructor]? instructorDict[row.instructor]['car']:false
+    }},
+    { name: 'returning', title: 'Returning', getCellValue: row=>{
+      return instructorDict[row.instructor]? instructorDict[row.instructor]['returning_instructor']:false
+    }},
+    { name: 'programs', title: 'Program Pref.', getCellValue: row=>{
+      return instructorDict[row.instructor]? instructorDict[row.instructor]['programs']:{}
+    }},
+    { name: 'school', title: 'School'},
+    { name: 'program', title: 'Program'},
+    
+    // { name: 'gender', title: 'Gender'},
+    // { name: 'year_of_instruction', title: 'School Year'},
+    // { name: 'major', title: 'Major'},
+    // { name: 'university', title: 'University'},
+    // { name: 'region', title: 'Region'},
+    // { name: 'address', title: 'Address'},
+    // { name: 'car', title: 'Car 🚗', description:'Weather they have a car or not'},
+    // { name: 'returning_instructor', title: 'Returning'},
+    // { name: 'shirt_size', title: 'Shirt Size 👕'},
+    // { name: 'programs', title: 'Programs'},
+    // { name: 'languages_spoken', title: 'Languages'},
+    // { name: 'schedule', title: 'Schedule'},
+    // { name: 'city', title: 'City'},
+    // { name: 'phone_number', title: 'Phone Number'},
+  ];
   console.log("2. Program Component");
   const classes = useStyles();
   const auth = useAuth();
-  const [addOpen, setAddOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [deleteOpen, setDeleteOpen] = useState(false);
   const [editedRow, setEditedRow] = useState(false);
-  const [deletedRow, setDeletedRow] = useState(false);
 
   const [columns] = useState(programColumns);
-//   const [BooleanColumns] = useState((table_type === 'Instructors' )? ['car','returning_instructor'] : ['program_time_flexibility','is_virtual']);
+  const [BooleanColumns] = useState(['car','returning']);
 //   const [ShirtColumns] = useState((table_type === 'Instructors' )? ['shirt_size'] : []);
-//   const [InstProgramColumns] = useState((table_type === 'Instructors' )?['programs']:[]);
+  const [InstProgramColumns] = useState(['programs']);
 //   const [SchoolProgramColumns] = useState((table_type === 'Instructors' )?[]:['programs']);
-    const [ScheduleColumns] = useState(['schedule']);
+  const [ScheduleColumns] = useState(['schedule']);
 //   const [ListColumns] = useState((table_type === 'Instructors' )?['languages_spoken','region']:['location_preferences','region','special_language_request']);
   const [defaultColumnWidths] = useState(programDefaultColumnWidths);
   const [defaultColumnOrder] = useState(programDefaultColumnOrder);
   const [defaultHiddenColumnNames] = useState([]);
+  const [lockList, setLockList] = useState([]);
   const [tableColumnExtensions] = useState([
     // { columnName: 'programs', wordWrapEnabled: true },
-    { columnName: 'schedule', wordWrapEnabled: true },
+    // { columnName: 'name', width: 165},
+    // { columnName: 'editing', wordWrapEnabled: true, width: 120},
+    // { columnName: 'schedule', wordWrapEnabled: true, width: 275},
+    // { columnName: 'car', wordWrapEnabled: true, width: 65},
+    // { columnName: 'returning', wordWrapEnabled: true, width: 100},
+    // { columnName: 'oldSchedule', wordWrapEnabled: true, width: 250},
+    { columnName: 'name', width: 165},
+    { columnName: 'editing', wordWrapEnabled: true, width: 120},
+    { columnName: 'schedule', wordWrapEnabled: true, width: 275},
+    { columnName: 'car', wordWrapEnabled: true, width: 65, align: 'center'},
+    { columnName: 'returning', wordWrapEnabled: true, width: 100, align: 'center'},
+    { columnName: 'programs', wordWrapEnabled: true, width: 250},
     // { columnName: 'languages_spoken', wordWrapEnabled: true },
   ]);
 
   const [pageSizes] = useState([5, 10, 25, 50, 0]);
   const [filterToggle, setFilterToggle] = useState(0);
   const [dense, setDense] = useState(false);
+  
   const TableRow = ({ ...restProps}) => (
     <VirtualTable.Row
       {...restProps}
     />
   );
-  const TableCell = ({...restProps}) => (
-    <VirtualTable.Cell
-      {...restProps}
-      style={{padding:dense?'0.25vh':null}}
-    />
-  );
-  const TableHeaderCell = ({...restProps}) => (
-    <TableHeaderRow.Cell
-      {...restProps}
-      style={{textAlign:'center', padding:dense?'1vh':null}}
+  const TableCell = ({children, ...restProps}) => {
+    return (
+      <VirtualTable.Cell
+        {...restProps}
+        style={{padding:dense?'0.25vh':null, textAlign:restProps.column.name === 'editing'?'center':null}}
+      >
+        {restProps.column.name === 'editing'?
+          <Tooltip title="Edit">
+            <IconButton style={{textAlign:'center',alignSelf:'center',padding:dense?'11px':'14px'}} onClick={()=>{
+              setEditedRow(()=>tableRow.row); 
+              setEditOpen(()=>true);
+            }}>
+              <EditIcon 
+                color='primary' 
+                fontSize={dense?'small':'default'}
+                classes={{fontSizeLarge: classes.fontSizeLarge}}
+              />
+            </IconButton>
+          </Tooltip>
+        :
+          children
+        }
+      </VirtualTable.Cell>
+    );
+  };
+  const TableHeaderCell = ({children, ...restProps}) => {
     
-    />
-  );
+    return (
+      <TableHeaderRow.Cell
+        {...restProps}
+        style={{textAlign:'center',alignSelf:'center', padding:dense?'1vh':null}}
+      >
+        {restProps.column.name === 'editing'?
+          <Typography color='primary' variant='button' style={{textAlign:'center', padding:dense?'1vh':null}}>
+            Manual Assignment
+          </Typography>
+        :
+          <div style={{display:'block'}}>{restProps.column.title}</div>
+        }
+      </TableHeaderRow.Cell>
+    );
+  };
+  
   const ToolbarRoot = ({children, ...restProps}) => (
     <Toolbar.Root {...restProps} style={{minHeight:dense?"0px":null}}>
       <div style={{display: 'flex', justifyContent: 'space-between', width:'100%'}}>
       <div style={{display: 'flex'}}>
+      <Tooltip title="Save PDF">
+        <IconButton >
+          <GetAppIcon/>
+        </IconButton>
+      </Tooltip>
       </div>
       <div style={{display: 'flex'}}>
       {children}
@@ -194,36 +290,7 @@ export default function TableView({
       </div>
     </Toolbar.Root>
   );
-  const TableEditColumnCell = ({tableRow, children, ...restProps}) =>(
-    <TableEditColumn.Cell 
-      {...restProps}
-      style={{padding:'0', textAlign:'center'}}
-    >
-      <Tooltip title="Edit">
-        <IconButton style={{padding:dense?'11px':'14px'}} onClick={()=>{
-          setEditedRow(()=>tableRow.row); 
-          setEditOpen(()=>true);
-        }}>
-          <EditIcon 
-            color='primary' 
-            fontSize={dense?'medium':'large'}
-            classes={{fontSizeLarge: classes.fontSizeLarge}}
-          />
-        </IconButton>
-      </Tooltip>
-    </TableEditColumn.Cell>
-  );
-  const TableEditColumnHeaderCell = ({children, ...restProps}) => (
-    <TableEditColumn.HeaderCell 
-      {...restProps}
-      style={{padding:'0px 1.5vw'}}
-    >
-    <Typography color='primary' variant='button'>
-        Manual Assignment
-    </Typography>
-      
-    </TableEditColumn.HeaderCell>
-  );
+
   const PagingPanelContainer = ({ ...restProps})=>(<>
     <div style={{display:'grid', gridTemplateColumns:'30% auto'}}>
     <FormControlLabel
@@ -311,15 +378,28 @@ export default function TableView({
         />
     );
   };
-
+  const GroupCellCentent = ({column, row}) => {
+    if (column.name === 'program'){
+      return SchoolProgramFormatter({row: {id: column.name}, value:[row.value]});
+    }else{
+      return (<span>
+          {schoolDict[row.value]['name']+'    '}
+          <Chip label={schoolDict[row.value]['is_virtual']?'Virtual':'In-Person'}
+            style={{backgroundColor:schoolDict[row.value]['is_virtual']?'#DBDAEB':'#D7F4F4'}}
+          />
+          {ScheduleFormatter({row:{id: row.value},value: schoolDict[row.value]['programs'][Object.keys(schoolDict[row.value]['programs'])[0]]})}
+      </span>);
+    }
+  };
   if(auth.currentSeason === ''){
     return(<h1>Season not selected.</h1>);
-  }else if((!rows && !error)||(!programData && !programError)){
-    return (<Loading />);
-  }else if(error || programError){
-    console.log("Error::useData(table_type,auth.)::Error", error);
-    return (<h1>ERROR. Check console logs</h1>);
   }
+  // else if((!rows && !error)||(!programData && !programError)){
+  //   return (<Loading />);
+  // }else if(error || programError){
+  //   console.log("Error::useData(table_type,auth.)::Error", error);
+  //   return (<h1>ERROR. Check console logs</h1>);
+  // }
 
   const commitChanges = ({ added, changed, deleted }) => {
     return null;
@@ -349,13 +429,14 @@ export default function TableView({
     // mutate([table_type,auth.currentSeason],changedRows,true);
   };
   return (<>
-    {/* <AddEntry 
-      open={addOpen} 
-      setOpen={setAddOpen} 
-      table_type={table_type}
-      
-    /> */}
-    <Paper elevation={3} style={{borderRadius: '1.3vh', display: 'flex',margin: '2vh 2vh 2vh 2vh', height: '96%', height: '-webkit-calc(96% - 64px)', height: '-moz-calc(96% - 64px)',height: 'calc(96% - 64px)',}}>
+    <EditEntry 
+      open={editOpen} 
+      setOpen={setEditOpen} 
+      editedRow={editedRow}
+    />
+
+    
+    <Paper elevation={3} style={{borderRadius: '1.3vh', display: 'flex',margin: '2vh 2vh 2vh 2vh', height: '94%', height: '-webkit-calc(94% - 70px)', height: '-moz-calc(94% - 70px)',height: 'calc(94% - 70px)',}}>
       <Grid
         rows={rows}
         columns={columns}
@@ -363,31 +444,28 @@ export default function TableView({
         rootComponent={Root}
       >
         
-        <SortingState defaultSorting={[]}/>
-        <IntegratedSorting />
-        
+
         <DataTypeProviders 
           BooleanColumns={BooleanColumns} 
-          ShirtColumns={ShirtColumns} 
+          ShirtColumns={[]} 
           ScheduleColumns={ScheduleColumns}
-          ListColumns={ListColumns}
+          ListColumns={[]}
         />
         <InstProgramTypeProvider for={InstProgramColumns} />
-        <SchoolProgramTypeProvider for={SchoolProgramColumns} />
         
         {filterToggle == 1 ? <FilteringState defaultFilters={[]} /> :
          filterToggle == 2 ? <FilteringState defaultFilters={[]} />: 
          null}
-        <IntegratedFiltering />
+         {filterToggle == 1 ? <IntegratedFiltering /> :
+         filterToggle == 2 ? <IntegratedFiltering />: 
+         null}
         
-        <PagingState defaultCurrentPage={0} defaultPageSize={25}/>
-        <IntegratedPaging />
-        <EditingState
-          onCommitChanges={commitChanges}
-          defaultEditingRowIds={[]}
+        
+        <GroupingState
+          grouping={[{ columnName: 'program' }, { columnName: 'school'}]}
         />
+        <IntegratedGrouping />
         
-        <DragDropProvider />
         <VirtualTable 
           height='100%'
           width='100%'
@@ -395,40 +473,31 @@ export default function TableView({
           rowComponent={TableRow}
           cellComponent={TableCell}
         />
-        
-        <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
-        <TableColumnReordering
-          defaultOrder={defaultColumnOrder}
-        />
+
         <TableHeaderRow 
-          showSortingControls
           cellComponent={TableHeaderCell} 
         />
-        <TableColumnVisibility
-          defaultHiddenColumnNames={defaultHiddenColumnNames}
-        />
-        <PagingPanel
-          pageSizes={pageSizes}
-          containerComponent={PagingPanelContainer}
-          
-        />
+
         <Toolbar rootComponent={ToolbarRoot}/>
-        <ColumnChooser messages={{showColumnChooser:"Hide Columns"}}/>
-        <TableEditRow />
-        <TableEditColumn
-          showAddCommand
-          showEditCommand
-          showDeleteCommand
-          width={dense?'120':'130'}
-          commandComponent = {TableEditCommand}
-          cellComponent = {TableEditColumnCell}
-          headerCellComponent = {TableEditColumnHeaderCell}
-        />
+
         {filterToggle == 1 ? <TableFilterRow/> :
          filterToggle == 2 ? <TableFilterRow showFilterSelector/> : 
          null}
+        <TableGroupRow 
+          contentComponent={GroupCellCentent}
+        />
       </Grid>
     </Paper>
-
   </>);
 };
+
+function EditEntry({
+  open,
+  setOpen,
+  editedRow,
+}){
+
+
+  return(<></>);
+
+}

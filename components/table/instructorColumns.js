@@ -31,7 +31,7 @@ export const instructorDefaultColumnWidths = [
   { columnName: 'shirt_size', width: 130 },
   { columnName: 'programs', width: 250 },
   { columnName: 'languages_spoken', width: 180 },
-  { columnName: 'schedule', width: 275},
+  { columnName: 'schedule', width: 290},
   { columnName: 'city', width: 100},
   { columnName: 'phone_number', width: 100},
 

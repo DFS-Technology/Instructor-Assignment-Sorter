@@ -4,6 +4,7 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import {Plugin} from '@devexpress/dx-react-core';
 import { DataTypeProvider } from '@devexpress/dx-react-grid';
+import { ScheduleOutlined } from '@material-ui/icons';
 
 
 
@@ -71,25 +72,31 @@ const scheduleVal = {
     'Friday': 4,
 };
 const scheduleText = {
-    'Monday': 'Mon',
-    'Tuesday': 'Tue',
-    'Wednesday': 'Wed',
-    'Thursday': 'Thu',
-    'Friday': 'Fri',
+    'Monday': 'M',
+    'Tuesday': 'Tu',
+    'Wednesday': 'W',
+    'Thursday': 'Th',
+    'Friday': 'F',
 };
-const dayVal = {
-    'Mon':0,
-    'Tue':1,
-    'Wed':2,
-    'Thu':3,
-    'Fri':4,
+const dayVal = (day)=> {
+    if(day[0]==='M'){
+        return 0;
+    }else if(day === 'Tu'){
+        return 1;
+    }else if(day[0] === 'W'){
+        return 2;
+    }else if(day === 'Th'){
+        return 3;
+    }else if(day[0] === 'F'){
+        return 4;
+    }
 };
 const numList = [1,2,3,4,5];
 const dayColor = numList.map((item) => 'hsl(41,81%,'+String(63*(1+(item-3)*0.175))+'%)');
 
 
 
-const ScheduleFormatter = ({row: {id}, value}) => {
+export const ScheduleFormatter = ({row: {id}, value}) => {
     if(!value || !Object.keys(value).length){
         return <></>;
     }
@@ -103,13 +110,31 @@ const ScheduleFormatter = ({row: {id}, value}) => {
             schedule.push([chipText, dayColor[scheduleVal[day]]]);
         }
     }
-    schedule.sort((a,b)=>dayVal[a[0].slice(0,3)]-dayVal[b[0].slice(0,3)]);
-    return (<div>{schedule.map((chipInfo) => (<Chip 
+    
+    schedule.sort((a,b)=>dayVal(a[0].slice(0,2))-dayVal(b[0].slice(0,2)));
+
+    
+    for(let i=0; i<schedule.length; i++){
+        var day = schedule[i];
+        var dayText = day[0].slice(0,2).trim()
+        var timeSlot = day[0].slice(2).trim()
+        for(let j=i+1; j<schedule.length; j++){
+            var day2 = schedule[j];
+            var timeSlot2 = day2[0].slice(2).trim()
+            if(timeSlot === timeSlot2){
+                dayText += day2[0].slice(0,2).trim()
+                schedule.splice(j,1);
+            }
+        }
+        day[0] = dayText+' '+timeSlot;
+        
+    }
+    return (<>{schedule.map((chipInfo) => (<Chip 
         label={chipInfo[0]}
         key={String(id)+'ScheduleChip'+chipInfo[0]}
         style={{margin:'1.5px', backgroundColor:chipInfo[1],fontWeight:'450'}}
         // style={{backgroundColor:chipColor, color:textColor,}}
-    />))}</div>);
+    />))}</>);
 };
 export function ScheduleTypeProvider(props){
     return (

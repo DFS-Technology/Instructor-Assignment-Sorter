@@ -1,25 +1,29 @@
 var firebase = require('firebase/app');
 
-const getSchedule = (day) =>{
-  if (Math.ceil(Math.random()*5) > 2 ){
-    var start_hour = (Math.floor(Math.random()*8)+8);
-    var period_length = (Math.ceil(Math.random()*4));
+const getSchedule = (max_hours,min_hours) =>{
+
+  while(true){
+    var start_hour = (Math.floor(Math.random()*12)+8);
+    var period_length = (Math.ceil(Math.random()*(max_hours-min_hours))+min_hours);
     var end_hour = start_hour + period_length;
+    if(end_hour > 16){
+      continue
+    } 
     start_hour = start_hour<10?'0'+start_hour.toString():start_hour.toString();
     end_hour = end_hour<10?'0'+end_hour.toString():end_hour.toString();
     var start_min = (Math.floor(Math.random()*4)*15);
     start_min = start_min?start_min.toString():'00';
     
-    var retObject = [];
-    retObject.push({
+    var retObject = {
       'start':  start_hour + ':' + start_min,
-      'end':  start_hour + ':' + start_min,
-    })
+      'end':  end_hour + ':' + start_min,
+    };
     return retObject; 
-  }else{
-    return false;
   }
+      
 };
+
+
 
 var instructors = {
     // id :{ incrementalId: 0},
@@ -43,33 +47,20 @@ var instructors = {
     }},
     schedule: { function: function(){
       const returnObject = {};
-      var Mon;
-      var Tue;
-      var Wed;
-      var Thu;
-      var Fri;
-      while (Object.keys(returnObject).length===0){
-        Mon = getSchedule('Monday');
-        if(Mon != false){
-          returnObject['Monday'] = Mon;
-        }
-        Tue = getSchedule('Tuesday');
-        if(Tue != false){
-          returnObject['Tuesday'] = Tue;
-        }
-        Wed = getSchedule('Wednesday');
-        if(Wed != false){
-          returnObject['Wednesday'] = Wed;
-        }
-        Thu = getSchedule('Thursday');
-        if(Thu != false){
-          returnObject['Thursday'] = Thu;
-        }
-        Fri = getSchedule('Friday');
-        if(Fri != false){
-          returnObject['Friday'] = Fri;
-        }
-      }
+
+      const MonWedFri = getSchedule(3,6);
+
+      returnObject['Monday'] = [MonWedFri];
+      returnObject['Wednesday'] = [MonWedFri];
+      returnObject['Friday'] = [MonWedFri];
+      
+      const TuThu = getSchedule(3,6);
+
+      returnObject['Tuesday'] = [TuThu];
+      returnObject['Thursday'] = [TuThu];
+      
+
+      
       return returnObject;
     }},
     city: { faker: 'address.city'},
@@ -96,33 +87,19 @@ var schools = {
     const returnObject = {};
     const programsList = ['AppJam','WebJam','Scratch','LESTEM'];
     const singleProgram = programsList[Math.floor(Math.random()*4)];
-    var Mon;
-    var Tue;
-    var Wed;
-    var Thu;
-    var Fri;
-    while (Object.keys(returnObject).length===0){
-      Mon = getSchedule('Monday');
-      if(Mon != false){
-        returnObject['Monday'] = Mon;
-      }
-      Tue = getSchedule('Tuesday');
-      if(Tue != false){
-        returnObject['Tuesday'] = Tue;
-      }
-      Wed = getSchedule('Wednesday');
-      if(Wed != false){
-        returnObject['Wednesday'] = Wed;
-      }
-      Thu = getSchedule('Thursday');
-      if(Thu != false){
-        returnObject['Thursday'] = Thu;
-      }
-      Fri = getSchedule('Friday');
-      if(Fri != false){
-        returnObject['Friday'] = Fri;
-      }
+    
+    if(Math.random()>0.5){
+      const MonWedFri = getSchedule(1,2);
+      returnObject['Monday'] = [MonWedFri];
+      returnObject['Wednesday'] = [MonWedFri];
+      returnObject['Friday'] = [MonWedFri];
+    }else{
+      const TuThu = getSchedule(1,2);
+      returnObject['Tuesday'] = [TuThu];
+      returnObject['Thursday'] = [TuThu];
+
     }
+    
     returnObject['number_of_instructors'] = Math.ceil(Math.random()*5+1);
     const ret = {};
     ret[singleProgram] = returnObject;
@@ -233,11 +210,11 @@ const db1 = firebase.database();
 var ret = [];
 var oldRef = db1.ref('/Fall 2020/instructors');
 
-data['instructors'].forEach(item => {
-    var newRef = oldRef.push();
-    console.log(newRef.key);
-    newRef.set(item).catch((e)=>console.log("Error Found: +++++++++++++++++++++++++",e));
-});
+// data['instructors'].forEach(item => {
+//     var newRef = oldRef.push();
+//     console.log(newRef.key);
+//     newRef.set(item).catch((e)=>console.log("Error Found: +++++++++++++++++++++++++",e));
+// });
 
 data['schools'].forEach(item => {
   var newRef = db1.ref('/Fall 2020/schools/'+item.id.toString())
@@ -245,7 +222,10 @@ data['schools'].forEach(item => {
   delete item['id'];
   newRef.set(item).catch((e)=>console.log("Error Found: +++++++++++++++++++++++++",e));
 });
-
+// for(const program in programs){
+//   db1.ref('/Fall 2020/Programs/'+program+'/assigned_schools').set(programs[program]['assigned_schools']);
+//   db1.ref('/Fall 2020/Programs/'+program+'/needed_instructors').set(programs[program]['needed_instructors']);
+// }
 // db1.ref('/Winter 2021/programs/').set(programs2);
 // db1.ref('/Winter 2021/Programs/').set(programs);
 // db1.ref('/Seasons/').update({'Winter 2021':'Winter 2021'});
