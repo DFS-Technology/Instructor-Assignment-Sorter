@@ -43,15 +43,15 @@ export function DeleteSeason({deleteOpen, setDeleteOpen}){
     const actionButtons = (
         <>
         <Button 
-            children={'Delete'} 
-            style={{color: "#f50057"}} 
-            onClick={()=>{handleSeasonDelete()}} 
+            children={'Cancel'}
+            //style={{color: "#f50057"}} 
+            onClick={()=>setDeleteOpen(false)} 
             size="small"
         />
         <Button 
-            children={'Cancel'}
+            children={'Delete'} 
             style={{color: "#f50057"}} 
-            onClick={()=>setDeleteOpen(false)} 
+            onClick={()=>{handleSeasonDelete()}} 
             size="small"
         />
         </>
@@ -148,13 +148,13 @@ export function AddSeason({addOpen, setAddOpen}){
             </DialogContent>
             <DialogActions>
                 <Button
+                    children={'Cancel'} 
+                    onClick={()=>setAddOpen(false)} color="primary"
+                />
+                <Button
                     children={'Create'}
                     disabled={error?true:false || seasonName===''} 
                     onClick={()=>handleAdd()} variant="contained" color="primary"
-                />
-                <Button
-                    children={'Cancel'} 
-                    onClick={()=>setAddOpen(false)} color="primary"
                 />
             </DialogActions>
         </Dialog>

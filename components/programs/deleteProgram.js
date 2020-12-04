@@ -56,15 +56,14 @@ export default function DeleteProgram({
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-            
+                <Button
+                    children={'Cancel'} 
+                    onClick={()=>setOpen(false)} color="primary"
+                />
                 <Button
                     children={"Delete"}
                     onClick={()=>handleDelete()} color="primary" variant="contained"
                     // style={{color:'red'}}
-                />
-                <Button
-                    children={'Cancel'} 
-                    onClick={()=>setOpen(false)} color="primary"
                 />
             </DialogActions>
         </Dialog>

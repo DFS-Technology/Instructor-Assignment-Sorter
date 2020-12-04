@@ -81,13 +81,13 @@ export default function EditAssignment({
               </DialogContent>
               <DialogActions>
                   <Button
+                      children={'Cancel'} 
+                      onClick={()=>setOpen(false)} color="primary"
+                  />
+                  <Button
                       children={'Confirm'}
                       disabled={(program==='') || (school==='')} 
                       onClick={()=>handleEdit()} variant="contained" color="primary"
-                  />
-                  <Button
-                      children={'Cancel'} 
-                      onClick={()=>setOpen(false)} color="primary"
                   />
               </DialogActions>
           </Dialog>

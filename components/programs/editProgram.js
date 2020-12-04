@@ -148,13 +148,13 @@ export default function EditProgram({
             </DialogContent>
             <DialogActions>
                 <Button
+                    children={'Cancel'} 
+                    onClick={()=>setOpen(false)} color="primary"
+                />
+                <Button
                     children={'Edit'}
                     disabled={(error?true:false) || (newProgramName==='') || (imgError?true:false)} 
                     onClick={()=>handleEdit()} variant="contained" color="primary"
-                />
-                <Button
-                    children={'Cancel'} 
-                    onClick={()=>setOpen(false)} color="primary"
                 />
             </DialogActions>
         </Dialog>
