@@ -27,19 +27,9 @@ export default function DeleteProgram({
 
 
     const handleDelete = () =>{
-        const assignedSchools = programData[oldProgramName]['assigned_schools'];
-        if(assignedSchools != 0){
-            for(const school in assignedSchools){
-                if(assignedSchools.hasOwnProperty(school) && assignedSchools[school] != 0){
-                    programData['unassigned_instructors'] += Object.keys(assignedSchools[school]).length
-                }
-            }
-        }
-        
         
         firebase.database().ref(currentSeason+'/Programs/'+oldProgramName).remove();
         firebase.database().ref(currentSeason+'/programs/'+oldProgramName).remove();
-        firebase.database().ref(currentSeason+'/Programs/unassigned_instructors').set(programData['unassigned_instructors']);
         firebase.storage().ref().child(currentSeason+'/'+oldProgramName+'.png').delete();
 
         delete programData[oldProgramName];

@@ -87,7 +87,7 @@ export function AddSeason({addOpen, setAddOpen}){
         tempSeasonObject[seasonName] = seasonName;
         firebase.database().ref('Seasons').update(tempSeasonObject);
         if(blankSeason){
-            firebase.database().ref(seasonName).update({'Instructors': {'temp':{'name':'temp'}}, 'Schools':{'temp':{'name':'temp'}}, 'Programs':{'unassigned_instructors':0}});
+            firebase.database().ref(seasonName).update({'instructors': {'temp':{'name':'temp'}}, 'schools':{'temp':{'name':'temp'}}, 'Programs':{'unassigned_instructors':0}});
         }else{
             firebase.database().ref(exportSeason).once('value').then(
                 (Snapshot)=>{
@@ -149,7 +149,7 @@ export function AddSeason({addOpen, setAddOpen}){
             <DialogActions>
                 <Button
                     children={'Create'}
-                    disabled={error || seasonName===''} 
+                    disabled={error?true:false || seasonName===''} 
                     onClick={()=>handleAdd()} variant="contained" color="primary"
                 />
                 <Button

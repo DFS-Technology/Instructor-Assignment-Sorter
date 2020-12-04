@@ -63,7 +63,7 @@ export default function EditProgram({
                             newProgramName+'.png',
                             {type:"image/png"}))
                         : programLogo ;
-        await oldLogoFile.delete();
+        await oldLogoFile.delete().catch((e)=>console.log(e));
         await newLogoFile.put(newBlobFile,{contentType:'image/png'});
         const newLogoURL = await newLogoFile.getDownloadURL();
 

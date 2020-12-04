@@ -23,7 +23,7 @@ export default function ProgramCards({
     const [editOpen, setEditOpen] = useState(false);
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [oldProgramName, setOldProgramName] = useState('');
-    const [oldProgramColor, setOldProgramColor] = useState('');
+    const [oldProgramColor, setOldProgramColor] = useState({});
     
     const EditHandler = (name, color) =>{
         setOldProgramName(name);
@@ -97,50 +97,49 @@ function TemplateProgramCard({
     const error = (assignedinstructors < totalInstructorsNeeded);
 
     return(
-    <Grid key={programName+'_Grid'} item style={{marginBottom:'15px', marginTop: '5px'}}>
-        <Card key={programName+'_Card'} elevation={3} style={{display:'flex',flexDirection:'column', borderStyle:'solid', borderWidth:'3px',borderColor:programColor,borderRadius:'30px', width:'300px', height:'420px'}}>
-            <CardActionArea key={programName+'_CardArea'}>
-            <CardMedia
-                key={programName+'CardMedia'}
-                component='img'
-                height='250px'
-                src={programLogo}
-                alt={programName}
-                title={programName}
-            />
-            <CardContent style={{color:programColor,borderStyle:'solid', borderWidth:'3px 0px 0px 0px',borderColor:programColor,}} key={programName+'CardContent'}>
-            <Typography gutterBottom variant="h5" component="h2" key={programName+'Typography1'}>
-                {programName}
-            </Typography>
-            <Typography variant="body2" color="textSecondary" key={programName+'Typography2'}>
-                <font color={error?'#f75c5c':null}>
-                Assigned Instructors: 
-                    <b  key={programName+'B1'}>
-                        {' '+assignedinstructors}
-                    </b> 
-                    / 
-                    <b  key={programName+'B2'}>
-                        {totalInstructorsNeeded}
-                    </b><br  key={programName+'Br1'}/>
-                </font>
-                Assigned Schools: 
-                    <b key={programName+'B3'}>
-                        {' '+numAssignedSchools}
-                    </b>
-            </Typography>
-            </CardContent>
-            </CardActionArea>
-            <CardActions style={{flexGrow:1, display:'flex', alignItems:"flex-end", justifyContent:"flex-end"}} key={programName+'CardActions'}>
-                <Button onClick={()=>{EditHandler(programName,programColor)}} size="small" color="primary" style={{display:'flex', alignItems:"flex-end", justify:"flex-end"}} key={programName+'Button1'}>
-                    Edit
-                </Button>
-                <Button onClick={()=>{DeleteHandler(programName)}} size="small" color="primary" style={{display:'flex', alignItems:"flex-end", justify:"flex-end"}} key={programName+'Button2'}>
-                    Delete
-                </Button>
-            </CardActions>
-        </Card>
-    </Grid>
-);
-    
+        <Grid key={programName+'_Grid'} item style={{marginBottom:'15px', marginTop: '5px'}}>
+            <Card key={programName+'_Card'} elevation={3} style={{display:'flex',flexDirection:'column', borderStyle:'solid', borderWidth:'3px',borderColor:programColor,borderRadius:'30px', width:'300px', height:'420px'}}>
+                <CardActionArea key={programName+'_CardArea'}>
+                <CardMedia
+                    key={programName+'CardMedia'}
+                    component='img'
+                    height='250px'
+                    src={programLogo}
+                    alt={programName}
+                    title={programName}
+                />
+                <CardContent style={{color:programColor,borderStyle:'solid', borderWidth:'3px 0px 0px 0px',borderColor:programColor,}} key={programName+'CardContent'}>
+                <Typography gutterBottom variant="h5" component="h2" key={programName+'Typography1'}>
+                    {programName}
+                </Typography>
+                <Typography variant="body2" color="textSecondary" key={programName+'Typography2'}>
+                    <font color={error?'#f75c5c':null}>
+                    Assigned Instructors: 
+                        <b  key={programName+'B1'}>
+                            {' '+assignedinstructors}
+                        </b> 
+                        / 
+                        <b  key={programName+'B2'}>
+                            {totalInstructorsNeeded}
+                        </b><br  key={programName+'Br1'}/>
+                    </font>
+                    Assigned Schools: 
+                        <b key={programName+'B3'}>
+                            {' '+numAssignedSchools}
+                        </b>
+                </Typography>
+                </CardContent>
+                </CardActionArea>
+                <CardActions style={{flexGrow:1, display:'flex', alignItems:"flex-end", justifyContent:"flex-end"}} key={programName+'CardActions'}>
+                    <Button onClick={()=>{EditHandler(programName,colorObj)}} size="small" color="primary" style={{display:'flex', alignItems:"flex-end", justify:"flex-end"}} key={programName+'Button1'}>
+                        Edit
+                    </Button>
+                    <Button onClick={()=>{DeleteHandler(programName)}} size="small" color="primary" style={{display:'flex', alignItems:"flex-end", justify:"flex-end"}} key={programName+'Button2'}>
+                        Delete
+                    </Button>
+                </CardActions>
+            </Card>
+        </Grid>
+    );
 }
 

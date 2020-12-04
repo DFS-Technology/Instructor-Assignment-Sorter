@@ -118,12 +118,14 @@ export const ScheduleFormatter = ({row: {id}, value}) => {
         var day = schedule[i];
         var dayText = day[0].slice(0,2).trim()
         var timeSlot = day[0].slice(2).trim()
-        for(let j=i+1; j<schedule.length; j++){
+        var j;
+        for(j=i+1; j<schedule.length; j++){
             var day2 = schedule[j];
             var timeSlot2 = day2[0].slice(2).trim()
             if(timeSlot === timeSlot2){
                 dayText += day2[0].slice(0,2).trim()
                 schedule.splice(j,1);
+                j--;
             }
         }
         day[0] = dayText+' '+timeSlot;

@@ -1,4 +1,4 @@
-  import {useState} from 'react'
+  import {useEffect, useState} from 'react'
   import Grid from '@material-ui/core/Grid';
 
   import ProgramsPageTitleBar from './programsPageTitleBar';
@@ -14,7 +14,7 @@
   import firebase from 'firebase/app'
   import 'firebase/database';
   import Loading from '../loading';
-  import { formatMs } from '@material-ui/core';
+
 
   export default function Programs({
     programData, 
@@ -33,6 +33,8 @@
     const [loading, setLoading] = useState(false);
     
     const handleProgramChange = ({oldProgramName, newProgramName, deleting})=>{
+      // When a program is deleted or its name is changed then this function
+      // makes respective changes to every school and instructor.
       if(!deleting && oldProgramName === newProgramName){
         return null
       }
@@ -61,23 +63,61 @@
       mutate(['Schools', currentSeason], schoolRows, false);
 
       return null;
-    }
-   
+    };
     const newSortHandler = async () => {
-      console.log(currentSeason);
       const request = {
           method: 'POST',
           headers: {'Content-Type': 'application/json','Accept': 'application/json'},
           body: JSON.stringify({'Season': currentSeason}),
       };
-      console.log(request);
+      console.log("Initiated New Sort, Sending Request: ",request);
+
       const matchObject = await fetch(
               'https://apurva29.pythonanywhere.com/sort',
               request)
           .then(response => {console.log('Response Recieved');return response.json()})
           .catch(error => console.log('Error Fetching Sort api',error));
-      console.log(matchObject);
+      console.log('Response Object', matchObject);
       
+      setProgramVariables(matchObject, true);
+      setSortPageToggle(()=>true);
+      setLoading(()=>false);
+    };
+    const reSortHandler = async () => {
+      const newSortData = {};
+      for(const program in programData){
+        newSortData[program] = {}
+        for(const school in programData[program]['assigned_schools']){
+          newSortData[program][school] = {}
+        }
+      }
+      for(const instructor of sortData){
+        if(instructor['lock']){
+          newSortData[instructor['program']][instructor['school']][instructor['instructor']] = instructor['schedule'];
+        }
+      }
+      const request = {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json','Accept': 'application/json'},
+          body: JSON.stringify({'Season': currentSeason, 'Locked': newSortData}),
+      };
+      console.log("Initiated Re Sort, Sending Request: ",request);
+
+      const matchObject = await fetch(
+              'https://apurva29.pythonanywhere.com/resort',
+              request)
+          .then(response => {console.log('Response Recieved');return response.json()})
+          .catch(error => console.log('Error Fetching Sort api',error));
+      console.log('Response Object', matchObject);
+      
+      setProgramVariables(matchObject, true);
+      setSortPageToggle(()=>true);
+      setLoading(()=>false);
+    };
+    const setProgramVariables = (matchObject, mutateProgramData) => {
+      if(!instructorRows || !schoolRows || !programData){
+        return null;
+      }
       const newInstructorDict = {};
       const unassignedInstructors = {};
       for(const instructor of instructorRows){
@@ -102,37 +142,57 @@
         var assignedInstructors = 0;
         for(const schoolID in matchObject[program]){
           assignedSchools[schoolID] = {};
-
-
           for(const instructorID in matchObject[program][schoolID]){
             assignedSchools[schoolID][instructorID] = matchObject[program][schoolID][instructorID];
             var newSortEntry = {};
             newSortEntry['id'] = newSortData.length;
             newSortEntry['instructor'] = instructorID;
+            newSortEntry['lock'] = false;
             newSortEntry['school'] = schoolID;
             newSortEntry['program'] = program;
             newSortEntry['schedule'] = matchObject[program][schoolID][instructorID];
             newSortData.push(newSortEntry);
+            assignedInstructors += 1;
             if(instructorID in unassignedInstructors){
-              assignedInstructors += 1;
               delete unassignedInstructors[instructorID];
             }
           }
         }
-        programData[program]['assigned_schools'] = assignedSchools;
-        programData[program]['assigned_instructors'] = assignedInstructors;
-        programData[program]['needed_instructors'] = neededInstructors[program];
+        if(mutateProgramData){
+          programData[program]['assigned_schools'] = assignedSchools;
+          programData[program]['assigned_instructors'] = assignedInstructors;
+          programData[program]['needed_instructors'] = neededInstructors[program];
+        }
       }
-      programData['unassigned_instructors'] = Object.keys(unassignedInstructors).length;
-      //firebase.
-      mutate(['Programs', currentSeason], programData, false);
+      for(const instructorID in unassignedInstructors){
+        newSortData.push({
+          'id': newSortData.length,
+          'instructor': instructorID, 
+          'program':'Unassigned', 
+          'school':'Unassigned', 
+          'lock':false,
+          'schedule':0});
+      }
+      if(mutateProgramData){
+        programData['unassigned_instructors'] = Object.keys(unassignedInstructors).length;
+        firebase.database().ref(currentSeason+'/Programs').set(programData);
+        mutate(['Programs', currentSeason], programData, false);
+      }
+      
       setSortData(()=>newSortData);
       setInstructorDict(()=>newInstructorDict);
       setSchoolDict(()=>newSchoolDict);
-      setSortPageToggle(()=>true);
-      setLoading(()=>false);
-  };
-  
+    };
+    useEffect(()=>{
+      const newSortData = {};
+      for(const program in programData){
+        newSortData[program] = {}
+        for(const school in programData[program]['assigned_schools']){
+          newSortData[program][school] = programData[program]['assigned_schools'][school]
+        }
+      }
+      setProgramVariables(newSortData, false);
+    },[programData, sortPageToggle, instructorRows, schoolRows]);
 
     if(currentSeason === ''){
       return(<h1>Season not selected.</h1>);
@@ -158,6 +218,7 @@
           setTableViewSwitch={setTableViewSwitch}
           programData={programData}
           newSortHandler={newSortHandler}
+          reSortHandler={reSortHandler}
           setLoading={setLoading}
         />
         {sortPageToggle?  
@@ -165,6 +226,7 @@
             <TableView 
               programData={programData} 
               rows={sortData}
+              setRows={setSortData}
               instructorDict={instructorDict}
               schoolDict={schoolDict}
             />

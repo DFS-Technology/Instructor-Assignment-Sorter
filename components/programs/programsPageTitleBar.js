@@ -11,7 +11,8 @@ import 'firebase/storage';
 export default function ProgramsPageTitleBar({
     sortPageToggle,  setSortPageToggle, 
     tableViewSwitch, setTableViewSwitch, 
-    programData, newSortHandler,setLoading
+    programData, newSortHandler, reSortHandler,
+    setLoading
 }){
     
     return (<>
@@ -39,7 +40,7 @@ export default function ProgramsPageTitleBar({
             </div>
             <div  style={{margin:'1vh', gridColumn:'2/span 1', justifySelf:'center'}}>
                 {sortPageToggle? 
-                    <Button size='large' variant="contained" color="secondary" style={{color:'white',textShadow:'0 0 5px #000000', fontSize:15,  borderRadius:'20px'}}>
+                    <Button onClick={()=>{setLoading(false);reSortHandler();}}size='large' variant="contained" color="secondary" style={{color:'white',textShadow:'0 0 5px #000000', fontSize:15,  borderRadius:'20px'}}>
                         Re-Sort
                     </Button>
                     :
