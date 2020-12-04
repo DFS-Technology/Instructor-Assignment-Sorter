@@ -43,6 +43,7 @@ export default function EditAssignment({
       rows[editedRow]['school'] = school;
       rows[editedRow]['program'] = program;
       rows[editedRow]['lock'] = true;
+      rows[editedRow]['schedule'] = schoolDict[school]['schedule'];
       setProgram('');
       setSchool('');
       setSchoolList([]);
