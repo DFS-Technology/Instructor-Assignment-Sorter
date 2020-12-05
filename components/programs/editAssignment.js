@@ -40,10 +40,16 @@ export default function EditAssignment({
       setSchoolList(Object.keys(programData[val]['assigned_schools']));
     };
     const handleEdit = () => {
+      const schedule = {};
+      for (const day in schoolDict[school]['programs'][Object.keys(schoolDict[school]['programs'])[0]]){
+        if (day != 'number_of_instructors'){
+            schedule[day] = schoolDict[school]['programs'][Object.keys(schoolDict[school]['programs'])[0]][day]
+        }  
+      }
       rows[editedRow]['school'] = school;
       rows[editedRow]['program'] = program;
       rows[editedRow]['lock'] = true;
-      rows[editedRow]['schedule'] = schoolDict[school]['schedule'];
+      rows[editedRow]['schedule'] = schedule;
       setProgram('');
       setSchool('');
       setSchoolList([]);
@@ -56,11 +62,11 @@ export default function EditAssignment({
     return(<>
       <Dialog style={{height:'100%'}} open={open} onClose={()=>setOpen(false)} aria-label="add-program-dialog">
               <DialogTitle id="add-program-dialog-title">
-                  Edit Program
+                  Manual Assignment
               </DialogTitle>
               <DialogContent>
                   <DialogContentText>
-                      Edit the name, theme color or logo of the program for the current Season.
+                      Assign <b>{instructorDict[rows[editedRow]['instructor']]['name']}</b> to prefered program and school.
                   </DialogContentText>
           
                   <form style={{display: 'flex',flexDirection: 'column',margin: 'auto',width: 'fit-content',}} noValidate>
@@ -68,14 +74,14 @@ export default function EditAssignment({
                           <InputLabel
                               children='Program' id="ManualAssignemnetProgram"/>
                           <Select id="ManualAssignemnetProgramSelect" value={program} onChange={(event)=>handleProgramChange(event.target.value)}>
-                              {programList.map(program => (<MenuItem  value={program} key={"ManAssItem"+program}>{program}</MenuItem >))}
+                              {programList.map(programName => (<MenuItem  value={programName} key={"ManAssItem"+programName}>{programName}</MenuItem >))}
                           </Select>
                       </FormControl>
                       <FormControl style={{minWidth:'200px'}}>
                           <InputLabel
                               children='School' id="ManAssSchool"/>
                           <Select id="ManAssSchoolSelect" value={school} onChange={(event)=>setSchool(event.target.value)}>
-                              {schoolList.map(school => (<MenuItem  value={school} key={"ManAssItem"+school}>{schoolDict[school]['name']}</MenuItem >))}
+                              {schoolList.map(schoolId => (<MenuItem  value={schoolId} key={"ManAssItem"+schoolId}>{schoolDict[schoolId]['name']}</MenuItem >))}
                           </Select>
                       </FormControl>
                   </form>

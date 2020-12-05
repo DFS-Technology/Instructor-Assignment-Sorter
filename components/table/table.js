@@ -6,6 +6,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
+
 import {Plugin} from '@devexpress/dx-react-core';
 import { DataTypeProvider } from '@devexpress/dx-react-grid';
 import { makeStyles } from '@material-ui/core/styles';
@@ -39,7 +40,8 @@ import { CSVLink } from "react-csv";
 import GetAppIcon from '@material-ui/icons/GetApp';
 import Tooltip from '@material-ui/core/Tooltip';
 
-// import {AddEntry} from './popUpEditor';
+import {AddInstructor} from './popUpEditor';
+
 
 const instructorExportColumns = [
   { key: 'name', label: 'Name'},
@@ -378,12 +380,13 @@ export default function Table({
     // mutate([table_type,auth.currentSeason],changedRows,true);
   };
   return (<>
-    {/* <AddEntry 
+    {table_type==='Instructors'?
+    <AddInstructor 
       open={addOpen} 
       setOpen={setAddOpen} 
-      table_type={table_type}
-      
-    /> */}
+      rows={rows}
+      programData={programData}
+    />:null}    
     <Paper elevation={3} style={{borderRadius: '1.3vh', display: 'flex',margin: '2vh 2vh 2vh 2vh', height: '96%', height: '-webkit-calc(96% - 64px)', height: '-moz-calc(96% - 64px)',height: 'calc(96% - 64px)',}}>
       <Grid
         rows={rows}
