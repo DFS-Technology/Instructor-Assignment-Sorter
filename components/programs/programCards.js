@@ -25,16 +25,13 @@ export default function ProgramCards({
     const [oldProgramName, setOldProgramName] = useState('');
     const [oldProgramColor, setOldProgramColor] = useState({});
     
-    const EditHandler = (name, color) =>{
+    const EditHandler = (name, color) => {
         setOldProgramName(name);
         setOldProgramColor(color);
-        setEditOpen(true);
-        return null;
     };
-    const DeleteHandler = (name)=>{
+    const DeleteHandler = (name) => {
         setOldProgramName(name);
         setDeleteOpen(true);
-        return null;
     };
 
     return(<>
@@ -77,7 +74,6 @@ export default function ProgramCards({
         </Grid>
     </>);
 };
-
 function TemplateProgramCard({
     singleProgramData,
     EditHandler, 
@@ -85,10 +81,7 @@ function TemplateProgramCard({
 }){
     const programName = singleProgramData['name'];
     const colorObj = singleProgramData['color'];
-    const programColor = 'rgba('+colorObj['r'].toString()+','+
-    colorObj['g'].toString()+','+
-    colorObj['b'].toString()+','+
-    colorObj['a'].toString()+')';
+    const programColor = rgbaToStr(colorObj);
     const programLogo = singleProgramData['logo'];
     
     const totalInstructorsNeeded = singleProgramData['needed_instructors'];
@@ -142,4 +135,9 @@ function TemplateProgramCard({
         </Grid>
     );
 }
-
+function rgbaToStr(colorObj){
+    return 'rgba('+colorObj['r'].toString()+','+
+          colorObj['g'].toString()+','+
+          colorObj['b'].toString()+','+
+          colorObj['a'].toString()+')';
+}

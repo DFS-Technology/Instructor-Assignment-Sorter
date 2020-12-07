@@ -43,7 +43,6 @@ export default function EditProgram({
         setNewProgramName(oldProgramName);
         setNewProgramColor(oldProgramColor);
     },[oldProgramName, oldProgramColor]);
-
     const handleEdit = async () =>{
         const oldLogoFile = firebase.storage().ref(currentSeason+'/'+oldProgramName+'.png');
         const newLogoFile = firebase.storage().ref(currentSeason+'/'+newProgramName+'.png');
@@ -92,8 +91,7 @@ export default function EditProgram({
         setImgError('');
         setOpen(false);
         return null;
-    }
-
+    };
     const handleFileChange = (file)=>{
         
         if(file.type!=='image/png'){
@@ -176,4 +174,4 @@ const useStyles = makeStyles((theme) => ({
     formControlLabel: {
       marginTop: theme.spacing(1),
     },
-  }));
+}));

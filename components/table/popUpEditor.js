@@ -21,16 +21,10 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { useAuth } from "../../lib/useAuth.js";
 import {mutate} from 'swr';
 
-import { SketchPicker } from 'react-color'
 import Input from '@material-ui/core/Input';
-import FormHelperText from '@material-ui/core/FormHelperText';
 
-import firebase from 'firebase/app'
-import 'firebase/database';
-import 'firebase/storage';
 import {deleteDocuments, addDocuments, editDocuments} from '../../lib/firestoreApi';
-import { AirlineSeatFlatOutlined, SentimentSatisfiedAlt } from '@material-ui/icons';
-import { setPageActionCreator } from '@material-ui/data-grid';
+
 
 import ISO6391 from 'iso-639-1';
 const languageList = ISO6391.getAllNames().sort();

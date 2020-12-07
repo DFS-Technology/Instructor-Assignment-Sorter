@@ -15,7 +15,6 @@ import TextField from '@material-ui/core/TextField';
 
 
 import { useAuth } from "../../lib/useAuth.js";
-import { useRouter } from 'next/router';
 import {mutate} from 'swr';
 
 import { SketchPicker } from 'react-color'
@@ -25,7 +24,6 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import firebase from 'firebase/app'
 import 'firebase/database';
 import 'firebase/storage';
-import { AirlineSeatFlatOutlined, SentimentSatisfiedAlt } from '@material-ui/icons';
 
 export default function AddProgram({open, setOpen, programData}){
     const classes = useStyles();

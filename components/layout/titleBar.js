@@ -21,7 +21,6 @@ import AddIcon from '@material-ui/icons/Add';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 
 import { useAuth } from "../../lib/useAuth.js";
-import { useRouter } from 'next/router';
 import { DeleteSeason, AddSeason } from './addDeleteSeasons';
 
 import Tooltip from '@material-ui/core/Tooltip';

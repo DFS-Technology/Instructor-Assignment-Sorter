@@ -1,38 +1,24 @@
 //https://devexpress.github.io/devextreme-reactive/react/grid/docs/guides/getting-started/
 import Chip from '@material-ui/core/Chip';
-import Input from '@material-ui/core/Input';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
-import {Plugin} from '@devexpress/dx-react-core';
 import { DataTypeProvider } from '@devexpress/dx-react-grid';
 import { makeStyles } from '@material-ui/core/styles';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, {useState} from 'react';
 import Paper from '@material-ui/core/Paper';
 
-import { withStyles } from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
 import DataTypeProviders, {ScheduleFormatter} from '../table/datatypeProviders';
 
 import EditAssignment from './editAssignment';
 
 import IconButton from '@material-ui/core/IconButton';
-import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
-import ClearIcon from '@material-ui/icons/Clear';
 import FilterListIcon from '@material-ui/icons/FilterList';
-import CheckIcon from '@material-ui/icons/Check';
 import Typography from '@material-ui/core/Typography';
 
 import { useAuth } from "../../lib/useAuth.js";
-import { useData } from "../../lib/useData";
-import {mutate} from 'swr';
-
-import Loading from '../loading';
 
 import Tooltip from '@material-ui/core/Tooltip';
 import GetAppIcon from '@material-ui/icons/GetApp';
@@ -54,19 +40,6 @@ import {
   TableGroupRow,
 } from '@devexpress/dx-react-grid-material-ui';
 
-
-
-
-
-const Root = props => <Grid.Root {...props} style={{ display: 'flex', height: '100%' , width: '100%'}} />;
-const useStyles = makeStyles((theme) => ({
-  chip:{
-    margin: '1.5px',
-  },
-  label:{
-    fontSize: '0.875rem',
-  },
-}));
 export default function TableView({
   rows, setRows,
   programData,
@@ -122,6 +95,8 @@ export default function TableView({
   const [filterToggle, setFilterToggle] = useState(0);
   const [dense, setDense] = useState(false);
   const [lockDict, setLockDict] = useState({});
+  
+
   const lockProgram = (lock, program) =>{
     for(const row of rows){
       if (row['program'] === program){
@@ -131,7 +106,6 @@ export default function TableView({
     setRows([...rows]);
     setLockDict({...lockDict, [program]:lock});
   };
-  
   const InstructorProgramFormatter = ({row:{id}, value}) => {
     if(!value || !Object.keys(value).length){
       return <></>;
@@ -172,6 +146,7 @@ export default function TableView({
     }
     return (<>{programs}</>);
   };
+  const Root = props => <Grid.Root {...props} style={{ display: 'flex', height: '100%' , width: '100%'}} />;
   const ToolbarRoot = ({children, ...restProps}) => (
     <Toolbar.Root {...restProps} style={{minHeight:dense?"0px":null}}>
       <div style={{display: 'flex', justifyContent: 'space-between', width:'100%'}}>
@@ -269,7 +244,7 @@ export default function TableView({
       if(row.value === 'Unassigned'){
         return (<>
           <Chip label={row.value} style={{backgroundColor:'rgba(100,100,100,100)', color:'white',fontWeight:'600'}}/>
-          <Tooltip title="Lock All">    
+          <Tooltip title={value?"Unlock All":"Lock All"}>    
             <Checkbox
               style={{textAlign:'center',alignSelf:'center',padding:dense?'11px':'14px'}}
               icon={<LockOpenIcon fontSize={dense?'small':'default'}  color='disabled'/>}
@@ -289,7 +264,7 @@ export default function TableView({
       const error = (assignedinstructors < totalInstructorsNeeded);
       return (<>
         {SchoolProgramFormatter({row: {id: column.name}, value:[row.value]})}
-        <Tooltip title="Lock All">    
+        <Tooltip title={value?"Unlock All":"Lock All"}>    
           <Checkbox
             style={{textAlign:'center',alignSelf:'center',padding:dense?'11px':'14px'}}
             icon={<LockOpenIcon fontSize={dense?'small':'default'}  color='disabled'/>}
@@ -397,8 +372,14 @@ export default function TableView({
     </Paper>
   </>);
 };
-
-
+const useStyles = makeStyles((theme) => ({
+  chip:{
+    margin: '1.5px',
+  },
+  label:{
+    fontSize: '0.875rem',
+  },
+}));
 function rgbaToStr(colorObj){
   return 'rgba('+colorObj['r'].toString()+','+
         colorObj['g'].toString()+','+

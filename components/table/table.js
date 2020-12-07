@@ -1,23 +1,15 @@
 //https://devexpress.github.io/devextreme-reactive/react/grid/docs/guides/getting-started/
 import Chip from '@material-ui/core/Chip';
-import Input from '@material-ui/core/Input';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 
-import {Plugin} from '@devexpress/dx-react-core';
 import { DataTypeProvider } from '@devexpress/dx-react-grid';
 import { makeStyles } from '@material-ui/core/styles';
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import Paper from '@material-ui/core/Paper';
 
-import { withStyles } from '@material-ui/core/styles';
-
 import DataTypeProviders from './datatypeProviders';
-import {deleteDocuments, addDocuments, editDocuments} from '../../lib/firestoreApi';
 
 import {instructorColumns, instructorDefaultColumnWidths, instructorDefaultColumnOrder} from './instructorColumns';
 import {schoolColumns, schoolDefaultColumnWidths,schoolDefaultColumnOrder} from './schoolColumns';
@@ -26,13 +18,9 @@ import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
-import ClearIcon from '@material-ui/icons/Clear';
 import FilterListIcon from '@material-ui/icons/FilterList';
-import CheckIcon from '@material-ui/icons/Check';
 
 import { useAuth } from "../../lib/useAuth.js";
-import { useData } from "../../lib/useData";
-import {mutate} from 'swr';
 
 import Loading from '../loading';
 
@@ -41,23 +29,6 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import Tooltip from '@material-ui/core/Tooltip';
 
 import {AddInstructor,EditInstructor,DeleteInstructor, AddSchool,EditSchool,DeleteSchool} from './popUpEditor';
-
-
-const instructorExportColumns = [
-  { key: 'name', label: 'Name'},
-  { key: 'gender', label: 'Gender'},
-  { key: 'schoolYear', label: 'School Year'},
-  { key: 'major', label: 'Major'},
-  { key: 'university', label: 'University'},
-  { key: 'region', label: 'Region'},
-  { key: 'startingLocation', label: 'Address'},
-  { key: 'car', label: 'Car 🚗', description:'Weather they have a car or not'},
-  { key: 'returner', label: 'Returning'},
-  { key: 'shirtSize', label: 'Shirt Size 👕'},
-  { key: 'programs', label: 'Programs'},
-  { key: 'languages', label: 'Languages'},
-];
-
 
 import {
   EditingState,
@@ -92,41 +63,23 @@ import {
 
   TableFilterRow, 
 } from '@devexpress/dx-react-grid-material-ui';
-import { selectedRowsCountSelector } from '@material-ui/data-grid';
 
 
+const instructorExportColumns = [
+  { key: 'name', label: 'Name'},
+  { key: 'gender', label: 'Gender'},
+  { key: 'schoolYear', label: 'School Year'},
+  { key: 'major', label: 'Major'},
+  { key: 'university', label: 'University'},
+  { key: 'region', label: 'Region'},
+  { key: 'startingLocation', label: 'Address'},
+  { key: 'car', label: 'Car 🚗', description:'Weather they have a car or not'},
+  { key: 'returner', label: 'Returning'},
+  { key: 'shirtSize', label: 'Shirt Size 👕'},
+  { key: 'programs', label: 'Programs'},
+  { key: 'languages', label: 'Languages'},
+];
 
-const TableEditCommand = ({...restProps}) => {
-  return null;
-};
-
-
-
-
-
-
-const Root = props => <Grid.Root {...props} style={{ display: 'flex', height: '100%' , width: '100%'}} />;
-const useStyles = makeStyles((theme) => ({
-  chip:{
-    margin: '1.5px',
-  },
-  label:{
-    fontSize: '0.875rem',
-  },
-  fontSizeLarge:{
-    fontWeight: 500,
-    fontSize: '1.8rem',
-    margin:'0px',
-  },
-  addIcon:{
-    fontWeight: 600,
-    fontSize: '2.3rem',
-  },
-  addIconSmall:{
-    fontWeight: 500,
-    fontSize: '1.8rem',
-  }
-}));
 export default function Table({
   table_type, 
   rows, error,
@@ -166,24 +119,58 @@ export default function Table({
   const [pageSizes] = useState([5, 10, 25, 50, 0]);
   const [filterToggle, setFilterToggle] = useState(0);
   const [dense, setDense] = useState(false);
-  const TableRow = ({ ...restProps}) => (
-    <VirtualTable.Row
-      {...restProps}
-    />
-  );
-  const TableCell = ({...restProps}) => (
-    <VirtualTable.Cell
-      {...restProps}
-      style={{padding:dense?'0.25vh':null}}
-    />
-  );
-  const TableHeaderCell = ({...restProps}) => (
-    <TableHeaderRow.Cell
-      {...restProps}
-      style={{textAlign:'center', padding:dense?'1vh':null}}
-    
-    />
-  );
+  
+  const InstructorProgramFormatter = ({row:{id}, value}) => {
+    if(!value || !Object.keys(value).length){
+      return <></>;
+    }
+    const programs = [];
+    for (const [program, pref] of Object.entries(value)){
+      const colorObj = programData[program]['color'];
+      const chipColor = rgbaToStr(colorObj);
+        programs.push(<Chip 
+          label={program+': '+pref.toString()}
+          key={String(id)+'InstProgramChip'+program}
+          style={{backgroundColor:chipColor,  color:'white',fontWeight:'600'}}
+          className={classes.chip}
+        />);
+    }
+    return (<>{programs}</>);
+  };
+  const InstProgramTypeProvider = (props) => {
+    return (
+        <DataTypeProvider
+            formatterComponent={InstructorProgramFormatter}
+            {...props}
+        />
+    );
+  };
+  const SchoolProgramFormatter = ({row:{id}, value}) => {
+    if(!value || !value.length){
+      return <></>;
+    }
+    const programs = [];
+    for (const program of value){
+      const colorObj = programData[program]['color'];
+      const chipColor = rgbaToStr(colorObj);
+        programs.push(<Chip 
+          label={program}
+          key={String(id)+'SchoolProgramChip'+program}
+          className={classes.chip}
+          style={{backgroundColor:chipColor, color:'white',fontWeight:'600'}}
+        />);
+    }
+    return (<>{programs}</>);
+  };
+  const SchoolProgramTypeProvider = (props) => {
+    return (
+        <DataTypeProvider
+            formatterComponent={SchoolProgramFormatter}
+            {...props}
+        />
+    );
+  };
+  const Root = props => <Grid.Root {...props} style={{ display: 'flex', height: '100%' , width: '100%'}} />;
   const ToolbarRoot = ({children, ...restProps}) => (
     <Toolbar.Root {...restProps} style={{minHeight:dense?"0px":null}}>
       <div style={{display: 'flex', justifyContent: 'space-between', width:'100%'}}>
@@ -207,6 +194,22 @@ export default function Table({
       </div>
       </div>
     </Toolbar.Root>
+  );
+  const TableEditColumnHeaderCell = ({children, ...restProps}) => (
+    <TableEditColumn.HeaderCell 
+      {...restProps}
+      style={{padding:'0px 1.5vw'}}
+    >
+      <Tooltip title="New" placement="top">
+      <IconButton style={{padding:'1vh'}} onClick={()=>setAddOpen(true)}>
+        <AddIcon 
+          classes={{fontSizeLarge: classes.addIcon, fontSizeInherit:classes.addIconSmall}}
+          color='primary' 
+          fontSize={dense?'inherit':'large'}
+        />
+      </IconButton>
+      </Tooltip>
+    </TableEditColumn.HeaderCell>
   );
   const TableEditColumnCell = ({tableRow, children, ...restProps}) =>(
     <TableEditColumn.Cell 
@@ -239,21 +242,25 @@ export default function Table({
       </Tooltip>
     </TableEditColumn.Cell>
   );
-  const TableEditColumnHeaderCell = ({children, ...restProps}) => (
-    <TableEditColumn.HeaderCell 
+  const TableEditCommand = ({...restProps}) => {
+    return null;
+  };
+  const TableRow = ({ ...restProps}) => (
+    <VirtualTable.Row
       {...restProps}
-      style={{padding:'0px 1.5vw'}}
-    >
-      <Tooltip title="New" placement="top">
-      <IconButton style={{padding:'1vh'}} onClick={()=>setAddOpen(true)}>
-        <AddIcon 
-          classes={{fontSizeLarge: classes.addIcon, fontSizeInherit:classes.addIconSmall}}
-          color='primary' 
-          fontSize={dense?'inherit':'large'}
-        />
-      </IconButton>
-      </Tooltip>
-    </TableEditColumn.HeaderCell>
+    />
+  );
+  const TableHeaderCell = ({...restProps}) => (
+    <TableHeaderRow.Cell
+      {...restProps}
+      style={{textAlign:'center', padding:dense?'1vh':null}}
+    />
+  );
+  const TableCell = ({...restProps}) => (
+    <VirtualTable.Cell
+      {...restProps}
+      style={{padding:dense?'0.25vh':null}}
+    />
   );
   const PagingPanelContainer = ({ ...restProps})=>(<>
     <div style={{display:'grid', gridTemplateColumns:'30% auto'}}>
@@ -279,69 +286,9 @@ export default function Table({
       {...restProps}
       style={{gridColumn:'2 / span 1', justifySelf:'end', padding:dense?'0px':null}}
     />
-    
-      
     </div>
   </>);
-
-  const InstructorProgramFormatter = ({row:{id}, value}) => {
-    if(!value || !Object.keys(value).length){
-      return <></>;
-    }
-    const programs = [];
-    for (const [program, pref] of Object.entries(value)){
-      const colorObj = programData[program]['color'];
-      const chipColor = 'rgba('+colorObj['r'].toString()+','+
-        colorObj['g'].toString()+','+
-        colorObj['b'].toString()+','+
-        colorObj['a'].toString()+')';
-      const textColor = chipColor>'#888888'?'#333333':'#dddddd';
-        programs.push(<Chip 
-          label={program+': '+pref.toString()}
-          key={String(id)+'InstProgramChip'+program}
-          style={{backgroundColor:chipColor,  color:'white',fontWeight:'600'}}
-          className={classes.chip}
-        />);
-    }
-    return (<>{programs}</>);
-  };
-  const  InstProgramTypeProvider = (props) => {
-    return (
-        <DataTypeProvider
-            formatterComponent={InstructorProgramFormatter}
-            {...props}
-        />
-    );
-  };
-  const SchoolProgramFormatter = ({row:{id}, value}) => {
-    if(!value || !value.length){
-      return <></>;
-    }
-    const programs = [];
-    for (const program of value){
-      const colorObj = programData[program]['color'];
-      const chipColor = 'rgba('+colorObj['r'].toString()+','+
-        colorObj['g'].toString()+','+
-        colorObj['b'].toString()+','+
-        colorObj['a'].toString()+')';
-      const textColor = chipColor>'#888888'?'#000000':'#ffffff';
-        programs.push(<Chip 
-          label={program}
-          key={String(id)+'SchoolProgramChip'+program}
-          className={classes.chip}
-          style={{backgroundColor:chipColor, color:'white',fontWeight:'600'}}
-        />);
-    }
-    return (<>{programs}</>);
-  };
-  const SchoolProgramTypeProvider = (props) => {
-    return (
-        <DataTypeProvider
-            formatterComponent={SchoolProgramFormatter}
-            {...props}
-        />
-    );
-  };
+  
 
   if(auth.currentSeason === ''){
     return(<h1>Season not selected.</h1>);
@@ -470,3 +417,32 @@ export default function Table({
 
   </>);
 };
+const useStyles = makeStyles((theme) => ({
+  chip:{
+    margin: '1.5px',
+  },
+  label:{
+    fontSize: '0.875rem',
+  },
+  fontSizeLarge:{
+    fontWeight: 500,
+    fontSize: '1.8rem',
+    margin:'0px',
+  },
+  addIcon:{
+    fontWeight: 600,
+    fontSize: '2.3rem',
+  },
+  addIconSmall:{
+    fontWeight: 500,
+    fontSize: '1.8rem',
+  }
+}));
+function rgbaToStr(colorObj){
+  return 'rgba('+
+    colorObj['r'].toString()+','+
+    colorObj['g'].toString()+','+
+    colorObj['b'].toString()+','+
+    colorObj['a'].toString()+
+    ')';
+}

@@ -15,8 +15,6 @@ export const instructorColumns = [
   { name: 'city', title: 'City'},
   { name: 'phone_number', title: 'Phone Number'},
   { name: 'programs_teaching', title: 'Programs (for filtering)'},
-
-
 ];
 
 export const instructorDefaultColumnWidths = [
@@ -36,7 +34,6 @@ export const instructorDefaultColumnWidths = [
   { columnName: 'city', width: 100},
   { columnName: 'phone_number', width: 100},
   { columnName: 'programs_teaching', width: 100},
-
 ];
 
 

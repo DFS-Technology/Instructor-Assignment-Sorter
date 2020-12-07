@@ -1,6 +1,3 @@
-import {useState} from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-
 import Button from '@material-ui/core/Button';
 
 import Dialog from '@material-ui/core/Dialog';
@@ -11,7 +8,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 
 import { useAuth } from "../../lib/useAuth.js";
-import { useRouter } from 'next/router';
 import {mutate} from 'swr';
 
 

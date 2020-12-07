@@ -19,7 +19,6 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
 import { useAuth } from "../../lib/useAuth.js";
-import { useRouter } from 'next/router';
 import {mutate} from 'swr';
 
 
@@ -28,7 +27,6 @@ import 'firebase/database';
 
 export function DeleteSeason({deleteOpen, setDeleteOpen}){
     const {setPageName, seasonList, currentSeason, setSeasonList, setCurrentSeason} = useAuth();
-    const router = useRouter();
 
     const handleSeasonDelete = ()=>{
         var newSeasonList = seasonList.filter(season=> season!==currentSeason);
@@ -38,13 +36,13 @@ export function DeleteSeason({deleteOpen, setDeleteOpen}){
         setSeasonList(newSeasonList);
         setCurrentSeason(newSeasonList[0]);
         mutate(['Seasons',true],newSeasonList,false);
-        router.push('/');
+        setPageName('Programs');
     };
     const actionButtons = (
         <>
         <Button 
             children={'Cancel'}
-            //style={{color: "#f50057"}} 
+            style={{color: "#ffffff"}} 
             onClick={()=>setDeleteOpen(false)} 
             size="small"
         />
@@ -70,7 +68,6 @@ export function DeleteSeason({deleteOpen, setDeleteOpen}){
 
 export function AddSeason({addOpen, setAddOpen}){
     const classes = useStyles();
-    const router = useRouter();
     const {setPageName, seasonList, setSeasonList, setCurrentSeason} = useAuth(); 
     const [seasonName, setSeasonName] = useState('');
     const [blankSeason, setBlankSeason] = useState(true);
@@ -100,7 +97,7 @@ export function AddSeason({addOpen, setAddOpen}){
         setSeasonName('');
         setError('');
         mutate(['Seasons',true],newSeasonList,false);
-        router.push('/');
+        setPageName('Programs');
         return null;
     };
     const handleTextChange = (value)=>{

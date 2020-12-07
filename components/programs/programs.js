@@ -4,7 +4,6 @@
   import ProgramsPageTitleBar from './programsPageTitleBar';
 
   import ProgramCards from './programCards';
-  import SortPage from '../sortingPagesComponents/programs';
   import TableView from './tableView';
 
   import { useAuth } from "../../lib/useAuth.js";
@@ -231,10 +230,7 @@
               schoolDict={schoolDict}
             />
             :
-            <SortPage  
-              programData={programData} 
-              sortData={sortData}
-            />
+            null
           :
           <ProgramCards 
             programData={programData} 

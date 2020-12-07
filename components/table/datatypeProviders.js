@@ -9,9 +9,29 @@ import { ScheduleOutlined } from '@material-ui/icons';
 
 
 
-const ShirtFormatter = ({ value }) => <Chip label={value} />;
-const BooleanFormatter = ({ value }) => <Chip label={value ? 'Yes' : 'No'} style={{backgroundColor:value?'#F9DEA6':null}} />;
-
+const ShirtFormatter = ({ value }) => 
+    <Chip 
+        label={value} 
+    />;
+const BooleanFormatter = ({ value }) => 
+    <Chip 
+        label={value ? 'Yes' : 'No'} 
+        style={{
+            backgroundColor:value?'#F9DEA6':null
+        }} 
+    />;
+const ListFormatter = ({row:{id}, value}) => {
+    if(!value || !value.length){
+        return <></>;
+    }
+    return (<>{value.map( item => 
+        <Chip 
+          label={item}
+          key={String(id)+'ListItem'+item}
+          style={{margin:'1.5px'}}
+        />
+    )}</>);
+};
 
 function ShirtEditor({ value, onValueChange }){
     return (
@@ -59,6 +79,14 @@ function ShirtTypeProvider(props){
         <DataTypeProvider
             formatterComponent={ShirtFormatter}
             editorComponent={ShirtEditor}
+            {...props}
+        />
+    );
+};
+const  ListTypeProvider = (props) => {
+    return (
+        <DataTypeProvider
+            formatterComponent={ListFormatter}
             {...props}
         />
     );
@@ -135,7 +163,6 @@ export const ScheduleFormatter = ({row: {id}, value}) => {
         label={chipInfo[0]}
         key={String(id)+'ScheduleChip'+chipInfo[0]}
         style={{margin:'1.5px', backgroundColor:chipInfo[1],fontWeight:'450'}}
-        // style={{backgroundColor:chipColor, color:textColor,}}
     />))}</>);
 };
 export function ScheduleTypeProvider(props){
@@ -145,29 +172,9 @@ export function ScheduleTypeProvider(props){
             {...props}
         />
     );
-  };
-  const ListFormatter = ({row:{id}, value}) => {
-    if(!value || !value.length){
-        return <></>;
-    }
-    const listItems = [];
-    for (const item of value){
-        listItems.push(<Chip 
-          label={item}
-          key={String(id)+'ListItem'+item}
-          style={{margin:'1.5px'}}
-        />);
-    }
-    return (<>{listItems}</>);
-  };
-  const  ListTypeProvider = (props) => {
-    return (
-        <DataTypeProvider
-            formatterComponent={ListFormatter}
-            {...props}
-        />
-    );
-  };
+};
+
+
 
 function DataTypeProviders({BooleanColumns, ShirtColumns, ScheduleColumns,ListColumns}){
     return (

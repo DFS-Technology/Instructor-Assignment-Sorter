@@ -2,9 +2,15 @@
 export const schoolColumns = [
   { name: 'name', title: 'Name'},
   { name: 'address', title: 'Address'},
-  { name: 'programs', title: 'Programs', getCellValue: row=> {return row.programs?Object.keys(row.programs):[]}},
-  { name: 'schedule', title: 'Schedule', getCellValue: row=> {return row.programs?row.programs[Object.keys(row.programs)[0]]:{}}},
-  { name: 'number_of_instructors', title: 'Num. Inst.', getCellValue: row=> {return row.programs?row.programs[Object.keys(row.programs)[0]]['number_of_instructors']:{}}},
+  { name: 'programs', title: 'Programs', getCellValue: row=> {
+    return row.programs?Object.keys(row.programs):[]
+  }},
+  { name: 'schedule', title: 'Schedule', getCellValue: row=> {
+    return row.programs?row.programs[Object.keys(row.programs)[0]]:{}
+  }},
+  { name: 'number_of_instructors', title: 'Num. Inst.', getCellValue: row=> {
+    return row.programs?row.programs[Object.keys(row.programs)[0]]['number_of_instructors']:{}
+  }},
   { name: 'special_language_request', title: 'Language Requests'},
   { name: 'is_virtual', title: 'Virtual'},
   { name: 'location_preferences', title: 'Location Preference'},
@@ -36,5 +42,4 @@ export const schoolDefaultColumnWidths = [
     'location_preferences',
     'address',
     'program_time_flexibility',
-    
   ];

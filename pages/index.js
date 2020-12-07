@@ -34,10 +34,7 @@ export default function App() {
     console.log("Error::useData('Seasons',null)::Error", seasonError);
     return (<h1>ERROR. Check console logs</h1>);
   }
-  
-  // auth.setSeasonList(seasonsData);
-  // auth.currentSeason?null:auth.setCurrentSeason(seasonsData[0]?seasonsData[0]:'');
-  
+    
   return (
     <Layout  pageName={auth.pageName} setSortPageToggle={setSortPageToggle}>
       {auth.pageName === 'Programs'     ?   

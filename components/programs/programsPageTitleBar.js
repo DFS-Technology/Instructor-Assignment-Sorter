@@ -1,12 +1,7 @@
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import Link from '@material-ui/core/Link';
-
 import Button from '@material-ui/core/Button';
-
-import firebase from 'firebase/app'
-import 'firebase/storage';
-
 
 export default function ProgramsPageTitleBar({
     sortPageToggle,  setSortPageToggle, 
@@ -14,7 +9,6 @@ export default function ProgramsPageTitleBar({
     programData, newSortHandler, reSortHandler,
     setLoading
 }){
-    
     return (<>
         <div
             style={{
@@ -25,8 +19,7 @@ export default function ProgramsPageTitleBar({
                 padding:'0 1vh',
                 margin:'1vh 0', 
                 alignItems:"center" }}
-        >
-           
+        >   
             <div style={{margin:'1vh',gridColumn:'1/span 1', justifySelf:'start'}}>
                 {sortPageToggle? 
                     <Link onClick={()=>setSortPageToggle(!sortPageToggle)} style={{cursor:'pointer'}}>
@@ -70,9 +63,7 @@ export default function ProgramsPageTitleBar({
                         {' '+programData['unassigned_instructors'].toString()}
                     </div>
                 }
-            
             </div>
-            
         </div>
     </>);
 }
