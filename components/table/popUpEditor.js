@@ -140,11 +140,11 @@ export function AddInstructor({
 
     
     return (
-        <Dialog style={{height:'100%'}} open={open} onClose={()=>setOpen(false)} aria-label="add-program-dialog">
+        <Dialog style={{height:'100%'}} classes={{paper:classes.dialogPaper}} open={open} onClose={()=>setOpen(false)} aria-label="add-program-dialog">
             <DialogTitle id="add-program-dialog-title">
                 Add New Instructor
             </DialogTitle>
-            <DialogContent>
+            <DialogContent style={{maxWidth:'700px'}}>
                 <DialogContentText>
                     Add new instructor to current season. 
                 </DialogContentText>
@@ -218,7 +218,7 @@ export function AddInstructor({
                         style={{gridColumn:'4 / span 1', gridRow:'1 / span 1', placeSelf:'center', padding:'0.5vh',margin:'0.5vh'}}
                     />
                     
-                    <FormControl>
+                    <FormControl style={{gridColumn:'3 / span 1', gridRow:'2 / span 1', placeSelf:'center stretch', padding:'0.5vh',margin:'0.5vh'}}>
                           <InputLabel children='Shirt Size'/>
                           <Select name="shirt_size" value={state.shirt_size} onChange={handleChange}>
                               <MenuItem  value='XL'>XL</MenuItem >
@@ -228,14 +228,14 @@ export function AddInstructor({
                               <MenuItem  value='XS'>XS</MenuItem >
                           </Select>
                     </FormControl>
-                    <FormControl>
+                    <FormControl style={{gridColumn:'3 / span 1', gridRow:'3 / span 1', placeSelf:'center stretch', padding:'0.5vh', margin:'0.5vh'}}>
                           <InputLabel children='Programs'/>
                           <Select name="programs_teaching" value={state.programs_teaching} onChange={handleChange} multiple>
                               {Object.keys(programData).map(program => (<MenuItem  value={program} key={"programs_teaching_"+program}>{program}</MenuItem >))}
                           </Select>
                     </FormControl>
                     <div style={{display:'flex'}}>
-                    <FormControl component="fieldset" >
+                    <FormControl component="fieldset" style={{gridColumn:'4 / span 1', gridRow:'3 / span 2', placeSelf:'center stretch', padding:'0.5vh', margin:'0.5vh'}}>
                         <FormLabel component="legend">Program Prefrence</FormLabel>
                         <FormGroup>
                         {state.programs_teaching.map((program)=>(
@@ -250,7 +250,7 @@ export function AddInstructor({
                         </FormGroup>
                     </FormControl>
                     </div>
-                    <FormControl>
+                    <FormControl style={{gridColumn:'4 / span 1', gridRow:'2 / span 1', placeSelf:'center stretch', padding:'0.5vh',margin:'0.5vh'}}>
                           <InputLabel
                               children='Languages' id="ManualAssignemnetProgram"/>
                           <Select name='languages_spoken' value={state.languages_spoken} onChange={handleChange} multiple>
@@ -342,6 +342,7 @@ const useStyles = makeStyles((theme) => ({
       minWidth: 120,
       maxWidth: 400,
     },
-    formControlLabel: {
+    dialogPaper: {
+        maxWidth: 700,
     },
   }));

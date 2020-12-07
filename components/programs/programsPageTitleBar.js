@@ -40,7 +40,7 @@ export default function ProgramsPageTitleBar({
             </div>
             <div  style={{margin:'1vh', gridColumn:'2/span 1', justifySelf:'center'}}>
                 {sortPageToggle? 
-                    <Button onClick={()=>{setLoading(false);reSortHandler();}}size='large' variant="contained" color="secondary" style={{color:'white',textShadow:'0 0 5px #000000', fontSize:15,  borderRadius:'20px'}}>
+                    <Button onClick={()=>{setLoading(true);reSortHandler();}}size='large' variant="contained" color="secondary" style={{color:'white',textShadow:'0 0 5px #000000', fontSize:15,  borderRadius:'20px'}}>
                         Re-Sort
                     </Button>
                     :
@@ -56,7 +56,7 @@ export default function ProgramsPageTitleBar({
                         control={
                             <Switch
                                 checked={true/*tableViewSwitch*/}
-                                onChange={() => {setTableViewSwitch(!tableViewSwitch)}}
+                                onChange={() => {setTableViewSwitch(true)}}
                                 name="tableViewSwitch"
                                 color="primary"
                                 size="small"
