@@ -270,19 +270,23 @@ export default function TableView({
         return (<>
           <Chip label={row.value} style={{backgroundColor:'rgba(100,100,100,100)', color:'white',fontWeight:'600'}}/>
           <Tooltip title="Lock All">    
-          <Checkbox
-            style={{textAlign:'center',alignSelf:'center',padding:dense?'11px':'14px'}}
-            icon={<LockOpenIcon fontSize={dense?'small':'default'}  color='disabled'/>}
-            checkedIcon={<LockIcon fontSize={dense?'small':'default'} color='primary' />}
-            checked={value}
-            onChange={()=>{
-              lockProgram(!value, row.value); 
-              setValue(!value)
-            }}
-          />
-        </Tooltip>
+            <Checkbox
+              style={{textAlign:'center',alignSelf:'center',padding:dense?'11px':'14px'}}
+              icon={<LockOpenIcon fontSize={dense?'small':'default'}  color='disabled'/>}
+              checkedIcon={<LockIcon fontSize={dense?'small':'default'} color='primary' />}
+              checked={value}
+              onChange={()=>{
+                lockProgram(!value, row.value); 
+                setValue(!value)
+              }}
+            />
+          </Tooltip>
+          <b>{programData['unassigned_instructors']}</b>
         </>);
       }
+      const totalInstructorsNeeded = programData[row.value]['needed_instructors'];
+      const assignedinstructors =  programData[row.value]['assigned_schools']===0?0: programData[row.value]['assigned_instructors'];
+      const error = (assignedinstructors < totalInstructorsNeeded);
       return (<>
         {SchoolProgramFormatter({row: {id: column.name}, value:[row.value]})}
         <Tooltip title="Lock All">    
@@ -297,6 +301,11 @@ export default function TableView({
             }}
           />
         </Tooltip>
+        <font color={error?'#f75c5c':null}>
+            (<b>{assignedinstructors}</b> 
+            / 
+            <b>{totalInstructorsNeeded}</b>)
+        </font>
         </>);
     }else{
       if(row.value === 'Unassigned'){

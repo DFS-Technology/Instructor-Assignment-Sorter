@@ -31,7 +31,7 @@ export default function EditAssignment({
     const [school, setSchool] = useState('');
     const [schoolList, setSchoolList] = useState([]);
     useEffect(()=>{
-        if (rows && instructorDict){
+        if (rows && instructorDict && editedRow){
             setProgramList(instructorDict[rows[editedRow]['instructor']]['programs_teaching']);
         }
     },[editedRow]);
@@ -56,7 +56,7 @@ export default function EditAssignment({
       setRows(rows);
       setOpen(false);
     }
-    if(!rows || !instructorDict || !schoolDict){
+    if(!rows || !instructorDict || !schoolDict|| !editedRow){
         return null;
     }
     return(<>
@@ -66,6 +66,7 @@ export default function EditAssignment({
               </DialogTitle>
               <DialogContent>
                   <DialogContentText>
+                      {/* {console.log(instructorDict, rows, editedRow, )} */}
                       Assign <b>{instructorDict[rows[editedRow]['instructor']]['name']}</b> to prefered program and school.
                   </DialogContentText>
           

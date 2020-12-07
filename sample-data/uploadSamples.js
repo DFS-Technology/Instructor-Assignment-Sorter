@@ -32,7 +32,7 @@ var instructors = {
     year_of_instruction : {values: ['1st Year', '2nd Year', '3rd Year', '4th Year', '4+ Years']},
     major : {values: ['CS', 'EECS', 'Maths', 'Physics', 'Econ']},
     university : {values: ['UCI', 'UCLA', 'USC', 'UC Davis', 'UCSC']},
-    region : {values: [['Irvine'], ['Los Angeles'], ['Orang County']]},
+    region : {values: [['Irvine'], ['Los Angeles'], ['Orange County']]},
     address : {faker: 'address.streetAddress', locale: 'en_US'},
     car : {chance: 'bool'},
     returning_instructor : {chance: 'bool'},
@@ -81,7 +81,7 @@ var schools = {
   name: {function: function(){
     return this.object.name_temp+[' High',' Middle School',' Elementary School'][Math.floor(Math.random()*3)];
   }},
-  region : {values: [['Irvine'], ['Los Angeles'], ['Orang County']]},
+  region : {values: [['Irvine'], ['Los Angeles'], ['Orange County']]},
   address : {faker: 'address.streetAddress', locale: 'en_US'},
   programs: { function: function(){
     const returnObject = {};
@@ -118,7 +118,7 @@ var schools = {
 var mocker = require('mocker-data-generator').default;
 var data = mocker()
     .schema('instructors', instructors, 100)
-    .schema('schools', schools, 20)
+    .schema('schools', schools, 35)
     .buildSync();
 // var util = require('util');
 // console.log(util.inspect(data, { depth: 10 }));
@@ -208,16 +208,16 @@ initFirebase();
 var db = require('firebase/database');;
 const db1 = firebase.database();
 var ret = [];
-var oldRef = db1.ref('/Fall 2020/instructors');
+var oldRef = db1.ref('/Winter 2021/instructors');
 
-// data['instructors'].forEach(item => {
-//     var newRef = oldRef.push();
-//     console.log(newRef.key);
-//     newRef.set(item).catch((e)=>console.log("Error Found: +++++++++++++++++++++++++",e));
-// });
+data['instructors'].forEach(item => {
+    var newRef = oldRef.push();
+    console.log(newRef.key);
+    newRef.set(item).catch((e)=>console.log("Error Found: +++++++++++++++++++++++++",e));
+});
 
 data['schools'].forEach(item => {
-  var newRef = db1.ref('/Fall 2020/schools/'+item.id.toString())
+  var newRef = db1.ref('/Winter 2021/schools/'+item.id.toString())
   console.log(item.id);
   delete item['id'];
   newRef.set(item).catch((e)=>console.log("Error Found: +++++++++++++++++++++++++",e));
