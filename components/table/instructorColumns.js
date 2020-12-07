@@ -14,6 +14,7 @@ export const instructorColumns = [
   { name: 'schedule', title: 'Schedule'},
   { name: 'city', title: 'City'},
   { name: 'phone_number', title: 'Phone Number'},
+  { name: 'programs_teaching', title: 'Programs (for filtering)'},
 
 
 ];
@@ -34,6 +35,7 @@ export const instructorDefaultColumnWidths = [
   { columnName: 'schedule', width: 290},
   { columnName: 'city', width: 100},
   { columnName: 'phone_number', width: 100},
+  { columnName: 'programs_teaching', width: 100},
 
 ];
 
@@ -41,6 +43,7 @@ export const instructorDefaultColumnWidths = [
 export const instructorDefaultColumnOrder = [
   'name',
   'programs',
+  'programs_teaching',
   'schedule',
   'region',
   'car',

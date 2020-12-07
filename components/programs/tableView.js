@@ -121,7 +121,16 @@ export default function TableView({
 
   const [filterToggle, setFilterToggle] = useState(0);
   const [dense, setDense] = useState(false);
-  const [lockList, setLockList] = useState({})
+  const [lockDict, setLockDict] = useState({});
+  const lockProgram = (lock, program) =>{
+    for(const row of rows){
+      if (row['program'] === program){
+        row['lock'] = lock;
+      }
+    }
+    setRows([...rows]);
+    setLockDict({...lockDict, [program]:lock});
+  };
   
   const InstructorProgramFormatter = ({row:{id}, value}) => {
     if(!value || !Object.keys(value).length){
@@ -255,12 +264,44 @@ export default function TableView({
     </TableHeaderRow.Cell>
   );
   const GroupCellCentent = ({column, row}) => {
-    if(row.value === 'Unassigned'){
-      return <Chip label={row.value} style={{backgroundColor:'rgba(100,100,100,100)', color:'white',fontWeight:'600'}}/>
-    }
+    const [value, setValue] = useState(lockDict[row.value]?true:false);
     if (column.name === 'program'){
-      return SchoolProgramFormatter({row: {id: column.name}, value:[row.value]});
+      if(row.value === 'Unassigned'){
+        return (<>
+          <Chip label={row.value} style={{backgroundColor:'rgba(100,100,100,100)', color:'white',fontWeight:'600'}}/>
+          <Tooltip title="Lock All">    
+          <Checkbox
+            style={{textAlign:'center',alignSelf:'center',padding:dense?'11px':'14px'}}
+            icon={<LockOpenIcon fontSize={dense?'small':'default'}  color='disabled'/>}
+            checkedIcon={<LockIcon fontSize={dense?'small':'default'} color='primary' />}
+            checked={value}
+            onChange={()=>{
+              lockProgram(!value, row.value); 
+              setValue(!value)
+            }}
+          />
+        </Tooltip>
+        </>);
+      }
+      return (<>
+        {SchoolProgramFormatter({row: {id: column.name}, value:[row.value]})}
+        <Tooltip title="Lock All">    
+          <Checkbox
+            style={{textAlign:'center',alignSelf:'center',padding:dense?'11px':'14px'}}
+            icon={<LockOpenIcon fontSize={dense?'small':'default'}  color='disabled'/>}
+            checkedIcon={<LockIcon fontSize={dense?'small':'default'} color='primary' />}
+            checked={value}
+            onChange={()=>{
+              lockProgram(!value, row.value); 
+              setValue(!value)
+            }}
+          />
+        </Tooltip>
+        </>);
     }else{
+      if(row.value === 'Unassigned'){
+        return <Chip label={row.value} style={{backgroundColor:'rgba(100,100,100,100)', color:'white',fontWeight:'600'}}/>
+      }
       const program = Object.keys(schoolDict[row.value]['programs'])[0];
       const schedule = schoolDict[row.value]['programs'][program];
       var assignedInstructors = 0;

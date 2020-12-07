@@ -145,12 +145,12 @@ export default function Table({
   const [BooleanColumns] = useState((table_type === 'Instructors' )? ['car','returning_instructor'] : ['program_time_flexibility','is_virtual']);
   const [ShirtColumns] = useState((table_type === 'Instructors' )? ['shirt_size'] : []);
   const [InstProgramColumns] = useState((table_type === 'Instructors' )?['programs']:[]);
-  const [SchoolProgramColumns] = useState((table_type === 'Instructors' )?[]:['programs']);
+  const [SchoolProgramColumns] = useState((table_type === 'Instructors' )?['programs_teaching']:['programs']);
   const [ScheduleColumns] = useState(['schedule']);
   const [ListColumns] = useState((table_type === 'Instructors' )?['languages_spoken','region']:['location_preferences','region','special_language_request']);
   const [defaultColumnWidths] = useState((table_type === 'Instructors' )? instructorDefaultColumnWidths : schoolDefaultColumnWidths);
   const [defaultColumnOrder] = useState((table_type === 'Instructors' )? instructorDefaultColumnOrder : schoolDefaultColumnOrder);
-  const [defaultHiddenColumnNames] = useState([]);
+  const [defaultHiddenColumnNames] = useState((table_type === 'Instructors' )?['programs_teaching']:[]);
   const [tableColumnExtensions] = useState((table_type === 'Instructors' )?
   [
     { columnName: 'programs', wordWrapEnabled: true },
