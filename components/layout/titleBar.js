@@ -26,13 +26,14 @@ import { DeleteSeason, AddSeason } from './addDeleteSeasons';
 
 import Tooltip from '@material-ui/core/Tooltip';
 
-export default function appBar({open, handleDrawerOpen}){
+export default function appBar({open, handleDrawerOpen, setSortPageToggle}){
     const classes = useStyles();
     const {pageName, currentSeason, setCurrentSeason, seasonList, setPageName} = useAuth();
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [addOpen, setAddOpen] = useState(false);
     
     const handleSeasonChange = (value) => {
+      setSortPageToggle(false);
       setPageName('Programs');
       setCurrentSeason(value);}
     

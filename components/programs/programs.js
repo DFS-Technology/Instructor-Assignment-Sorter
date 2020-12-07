@@ -20,12 +20,12 @@
     programData, 
     instructorRows, 
     schoolRows, 
-    error,
+    error,sortPageToggle,setSortPageToggle
   }){
     console.log('2. Programs Component');
 
     const {currentSeason} = useAuth();  
-    const [sortPageToggle, setSortPageToggle] = useState(false);
+    
     const [tableViewSwitch, setTableViewSwitch] = useState(true);
     const [sortData, setSortData] = useState([]);
     const [instructorDict, setInstructorDict] = useState({});

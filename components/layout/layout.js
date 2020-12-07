@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Menu from './menu';
 import TitleBar from './titleBar';
 
-export default function Layout({children}) {
+export default function Layout({children, setSortPageToggle}) {
 
     const classes = useStyles();
     const [open, setOpen] = useState(true);
@@ -19,8 +19,8 @@ export default function Layout({children}) {
     return (
         <div className={classes.root}>
             
-            <TitleBar open={open} handleDrawerOpen={handleDrawerOpen} />
-            <Menu open={open} handleDrawerClose={handleDrawerClose}/>
+            <TitleBar open={open} handleDrawerOpen={handleDrawerOpen} setSortPageToggle={setSortPageToggle}/>
+            <Menu open={open} handleDrawerClose={handleDrawerClose} />
             
             <main className={classes.content}> 
                 <div className={classes.appBarSpacer} />

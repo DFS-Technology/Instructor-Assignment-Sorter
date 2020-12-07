@@ -1,4 +1,4 @@
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import Layout from '../components/layout/layout'
 import Table from '../components/table/table'
 import Programs from '../components/programs/programs'
@@ -17,7 +17,7 @@ export default function App() {
   const {data: programData, error: programError} = useData('Programs', auth.currentSeason, seasonsData);
   const {data: instructorRows, error: instructorError} = useData('Instructors', auth.currentSeason, seasonsData);
   const {data: schoolRows, error: schoolError} = useData('Schools', auth.currentSeason, seasonsData);
-
+  const [sortPageToggle, setSortPageToggle] = useState(false);
   useEffect(()=>{
     if(seasonsData){
       auth.setSeasonList(seasonsData);
@@ -39,13 +39,15 @@ export default function App() {
   // auth.currentSeason?null:auth.setCurrentSeason(seasonsData[0]?seasonsData[0]:'');
   
   return (
-    <Layout  pageName={auth.pageName}>
+    <Layout  pageName={auth.pageName} setSortPageToggle={setSortPageToggle}>
       {auth.pageName === 'Programs'     ?   
         <Programs 
           programData={programData} 
           instructorRows={instructorRows} 
           schoolRows={schoolRows}
           error={programError && instructorError && schoolError}
+          sortPageToggle={sortPageToggle}
+          setSortPageToggle={setSortPageToggle}
         />
       :null}
       {auth.pageName === 'Instructors'  ?   
