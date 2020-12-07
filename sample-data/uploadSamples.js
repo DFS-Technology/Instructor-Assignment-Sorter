@@ -79,7 +79,7 @@ var schools = {
   id :{ incrementalId: 35434},
   name_temp : { faker: 'name.findName'},
   name: {function: function(){
-    return this.object.name_temp+[' High',' Middle School',' Elementary School'][Math.ceil(Math.random()*3)];
+    return this.object.name_temp+[' High',' Middle School',' Elementary School'][Math.floor(Math.random()*3)];
   }},
   region : {values: [['Irvine'], ['Los Angeles'], ['Orang County']]},
   address : {faker: 'address.streetAddress', locale: 'en_US'},

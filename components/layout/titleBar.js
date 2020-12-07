@@ -28,11 +28,13 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 export default function appBar({open, handleDrawerOpen}){
     const classes = useStyles();
-    const {pageName, currentSeason, setCurrentSeason, seasonList} = useAuth();
+    const {pageName, currentSeason, setCurrentSeason, seasonList, setPageName} = useAuth();
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [addOpen, setAddOpen] = useState(false);
     
-    const handleSeasonChange = (value) => {setCurrentSeason(value);}
+    const handleSeasonChange = (value) => {
+      setPageName('Programs');
+      setCurrentSeason(value);}
     
     return (
       <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>

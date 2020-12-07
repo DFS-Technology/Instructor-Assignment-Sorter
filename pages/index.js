@@ -27,7 +27,7 @@ export default function App() {
     }
       
   },[seasonsData]);
-
+  
   if(!auth || !auth.user || (!seasonsData && !seasonError)){
     return (<Loading />);
   }else if(seasonError){

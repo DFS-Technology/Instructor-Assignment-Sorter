@@ -40,7 +40,7 @@ import { CSVLink } from "react-csv";
 import GetAppIcon from '@material-ui/icons/GetApp';
 import Tooltip from '@material-ui/core/Tooltip';
 
-import {AddInstructor} from './popUpEditor';
+import {AddInstructor,EditInstructor,DeleteInstructor, AddSchool,EditSchool,DeleteSchool} from './popUpEditor';
 
 
 const instructorExportColumns = [
@@ -215,7 +215,7 @@ export default function Table({
     >
       <Tooltip title="Delete">
         <IconButton style={{padding:dense?'11px':'14px'}} onClick={()=>{
-          setDeletedRow(()=>tableRow.rowId); 
+          setDeletedRow(()=>tableRow.row); 
           setDeleteOpen(()=>true);
         }}>
           <DeleteIcon 
@@ -352,41 +352,48 @@ export default function Table({
     return (<h1>ERROR. Check console logs</h1>);
   }
 
-  const commitChanges = ({ added, changed, deleted }) => {
-    return null;
-    let changedRows;
-    if (added) {
-      const newIds = addDocuments(auth.currentSeason, table_type, added);
-      changedRows = [
-        ...rows,
-        ...added.map((row, index) => ({
-          id: newIds[index],
-          // id: added.length + index,
-          ...row,
-        })),
-      ];
-    }
-    if (changed) {
-      changedRows = rows.map(row => (changed[row.id] ? { ...row, ...changed[row.id] } : row));
-      editDocuments(auth.currentSeason, table_type, changed, changedRows);
-    }
-    if (deleted) {
-      deleteDocuments(auth.currentSeason, table_type, deleted);
-      const deletedSet = new Set(deleted);
-      changedRows = rows.filter(row => !deletedSet.has(row.id));
-      
-    }
-    mutate([table_type,auth.currentSeason],changedRows,false);
-    // mutate([table_type,auth.currentSeason],changedRows,true);
-  };
   return (<>
-    {table_type==='Instructors'?
+    {table_type==='Instructors'?(<>
     <AddInstructor 
       open={addOpen} 
       setOpen={setAddOpen} 
       rows={rows}
       programData={programData}
-    />:null}    
+    />
+    <EditInstructor 
+      open={editOpen} 
+      setOpen={setEditOpen} 
+      rows={rows}
+      editedRow={editedRow}
+      programData={programData}
+    />
+    <DeleteInstructor 
+      open={deleteOpen} 
+      setOpen={setDeleteOpen} 
+      rows={rows}
+      deletedRow={deletedRow}
+    />
+    </>):(<>
+    <AddSchool
+      open={addOpen} 
+      setOpen={setAddOpen} 
+      rows={rows}
+      programData={programData}
+    />
+    <EditSchool 
+      open={editOpen} 
+      setOpen={setEditOpen} 
+      rows={rows}
+      editedRow={editedRow}
+      programData={programData}
+    />
+    <DeleteSchool
+      open={deleteOpen} 
+      setOpen={setDeleteOpen} 
+      rows={rows}
+      deletedRow={deletedRow}
+    />
+    </>)}    
     <Paper elevation={3} style={{borderRadius: '1.3vh', display: 'flex',margin: '2vh 2vh 2vh 2vh', height: '96%', height: '-webkit-calc(96% - 64px)', height: '-moz-calc(96% - 64px)',height: 'calc(96% - 64px)',}}>
       <Grid
         rows={rows}
@@ -415,7 +422,6 @@ export default function Table({
         <PagingState defaultCurrentPage={0} defaultPageSize={25}/>
         <IntegratedPaging />
         <EditingState
-          onCommitChanges={commitChanges}
           defaultEditingRowIds={[]}
         />
         
